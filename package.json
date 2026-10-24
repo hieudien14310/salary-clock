@@ -4,6 +4,9 @@
     "packages": [
       "apps/*",
       "packages/*"
-    ]
+    ],
+    "catalog": {
+      "ulid": "^3.0.2"
+    }
   }
 }
