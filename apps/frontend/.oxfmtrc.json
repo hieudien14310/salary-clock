@@ -10,5 +10,5 @@
   "arrowParens": "always",
   "endOfLine": "lf",
   "sortPackageJson": false,
-  "ignorePatterns": []
+  "ignorePatterns": ["src/components/ui/**", "src/components/theme-provider.tsx"]
 }
