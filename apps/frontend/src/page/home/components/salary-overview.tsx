@@ -1,11 +1,12 @@
 import { format } from 'date-fns';
-import { CalendarCheck, CalendarDays, Clock3, Hourglass, Timer } from 'lucide-react';
+import { CalculatorIcon, CalendarCheck, CalendarDays, Clock3, Hourglass, Timer } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { formatCurrency, type SalaryCalculation } from '@/lib/salary';
 import { useSalaryStore } from '@/stores/salary-store';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const RATE_UNITS = [
   { key: 'perSecond', label: 'Mỗi giây', detail: '1 giây', icon: Timer },
@@ -107,7 +108,7 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
       </section>
 
       <Card className="py-5">
-        <CardContent className="flex flex-wrap items-center justify-between gap-4 px-5 sm:px-7">
+        <CardContent className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border bg-muted/50">
               <CalendarCheck className="size-5" aria-hidden="true" />
@@ -135,13 +136,16 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
           </div>
         </CardContent>
       </Card>
-
-      <p className="text-xs leading-relaxed text-muted-foreground">
-        Cách tính: lương ÷ {calculation.daysInPeriod} ngày ÷ 24 giờ ÷ 60 phút ÷ 60 giây. Kỳ tính từ{' '}
-        {format(calculation.periodStart, 'dd/MM/yyyy')} đến hết {format(calculation.payday, 'dd/MM/yyyy')}, gồm cả cuối
-        tuần và ngày nghỉ. Sau kỳ này, tích lũy giữ ở mức đủ lương, thu nhập phát sinh trong ngày bằng 0. Chọn ngày nhận
-        lương mới để bắt đầu kỳ tiếp theo từ ngày 01 của tháng hiện tại. Số tiền tích lũy là ước tính.
-      </p>
+      <Alert>
+        <CalculatorIcon />
+        <AlertTitle>Cách tính</AlertTitle>
+        <AlertDescription>
+          lương ÷ {calculation.daysInPeriod} ngày ÷ 24 giờ ÷ 60 phút ÷ 60 giây. Kỳ tính từ{' '}
+          {format(calculation.periodStart, 'dd/MM/yyyy')} đến hết {format(calculation.payday, 'dd/MM/yyyy')}, gồm cả
+          cuối tuần và ngày nghỉ. <br /> Sau kỳ này, tích lũy giữ ở mức đủ lương, thu nhập phát sinh trong ngày bằng 0.
+          Chọn ngày nhận lương mới để bắt đầu kỳ tiếp theo từ ngày 01 của tháng hiện tại. Số tiền tích lũy là ước tính.
+        </AlertDescription>
+      </Alert>
     </div>
   );
 }
