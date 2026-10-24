@@ -56,6 +56,12 @@ Dự án được tổ chức dưới dạng Monorepo sử dụng tính năng **
    ```
 
 > [!TIP]
+> **Thao tác nhanh bằng CLI:**
+> Thay vì sửa thủ công JSON, bạn có thể dùng lệnh CLI `bun add --catalog` để Bun tự động đưa version ra root catalog và chuyển dependency trong gói con thành `"catalog:"`:
+> ```bash
+> bun add --filter <workspace-name> --catalog <package-name>
+> ```
+> 
 > Khi muốn cập nhật phiên bản của một thư viện dùng chung (ví dụ nâng `zod` lên bản mới hơn), bạn **chỉ cần sửa số phiên bản tại file root `package.json`** và chạy lệnh `bun install`. Tất cả các gói con dùng `catalog:` sẽ tự động được cập nhật.
 
 ---
@@ -116,7 +122,32 @@ Sử dụng cờ `--filter` (hoặc viết tắt là `-F`) đi kèm với tên g
   bun add --cwd apps/backend lodash
   ```
 
-### 4.3. Chạy script của package con từ thư mục gốc
+### 4.3. Thêm hoặc chuyển đổi thư viện vào Catalog bằng CLI
+Lệnh này đặc biệt hữu ích khi muốn **đưa một thư viện hiện có ở gói con ra root catalog** hoặc **cài thư viện mới và đưa thẳng vào root catalog**:
+
+* **Từ thư mục root (khuyên dùng):**
+  Tự động thêm version vào `catalog` ở root `package.json` và cập nhật dependency ở gói con thành `"catalog:"`:
+  ```bash
+  bun add --filter <workspace-name> --catalog <package-name>
+  # Hoặc viết tắt
+  bun -F <workspace-name> add --catalog <package-name>
+
+  # Ví dụ: Đưa ulid từ frontend ra catalog root:
+  bun -F front-end add --catalog ulid
+  ```
+
+* **Khi đang đứng trực tiếp tại thư mục của gói con (ví dụ `apps/frontend`):**
+  ```bash
+  bun add --catalog <package-name>
+  ```
+
+* **Chỉ thêm vào catalog ở root (chưa gắn vào gói con nào):**
+  Chạy ngay tại thư mục root:
+  ```bash
+  bun add --catalog <package-name>
+  ```
+
+### 4.4. Chạy script của package con từ thư mục gốc
 Bạn không cần `cd` vào thư mục của gói con để chạy lệnh:
 
 * **Chạy script thông thường (Ví dụ script `dev` của backend):**
@@ -129,7 +160,7 @@ Bạn không cần `cd` vào thư mục của gói con để chạy lệnh:
   bun -F mobile start
   ```
 
-### 4.4. Chạy script hàng loạt trên các Workspace
+### 4.5. Chạy script hàng loạt trên các Workspace
 * **Chạy song song (Parallel) script `typecheck` trên tất cả các gói con:**
   ```bash
   bun --workspaces typecheck
