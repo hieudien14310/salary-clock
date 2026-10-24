@@ -18,7 +18,7 @@ const HomePage = () => {
   );
 
   return (
-    <main className="flex-1 px-5 py-8 sm:px-8 sm:py-12">
+    <main className="flex-1 p-3">
       <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
         <div className="space-y-3">
           <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">Thu nhập & thời gian</p>

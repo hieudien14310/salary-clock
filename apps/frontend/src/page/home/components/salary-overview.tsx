@@ -77,12 +77,12 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
       </Card>
 
       <section aria-labelledby="salary-rates-heading" className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
+        {/* <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 id="salary-rates-heading" className="text-sm font-medium">
             Thời gian của bạn đáng giá bao nhiêu?
           </h2>
           <span className="text-xs text-muted-foreground">VND / đơn vị thời gian</span>
-        </div>
+        </div> */}
         <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 xl:grid-cols-4">
           {RATE_UNITS.map(({ key, label, detail, icon: Icon }) => (
             <Card key={key} className="min-w-0 gap-0 py-4">

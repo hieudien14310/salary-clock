@@ -11,7 +11,7 @@ const Header = () => {
 
   return (
     <header className="border-b">
-      <div className="flex h-18 items-center justify-between gap-4 px-5 sm:px-8">
+      <div className="flex items-center justify-between gap-4 p-3">
         <Link
           to={PATH.HOME}
           aria-label="Salary — Trang chủ"
@@ -20,12 +20,12 @@ const Header = () => {
           <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Clock3 className="size-4" aria-hidden="true" />
           </span>
-          <span className="text-lg font-semibold tracking-tight">
-            Salary<span className="text-muted-foreground">.</span>
+          <span className="flex h-8 flex-col justify-between">
+            <span className="text-lg leading-none font-semibold tracking-tight">Salary</span>
+            <span className="text-xs leading-none text-muted-foreground">Mỗi giây đều có giá trị.</span>
           </span>
         </Link>
         <div className="flex items-center gap-5">
-          <span className="hidden text-xs text-muted-foreground sm:inline">Mỗi giây đều có giá trị.</span>
           <Button
             type="button"
             variant="outline"

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { format } from 'date-fns';
-import { vi } from 'date-fns/locale';
+import { enUS, vi } from 'date-fns/locale';
 import { ChevronDownIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -36,8 +36,9 @@ export function DatePicker({ value, onChange, ...props }: DatePickerProps) {
           </Button>
         }
       />
-      <PopoverContent className="w-auto p-0" align="start">
+      <PopoverContent className="p-0" align="start">
         <Calendar
+          className="w-full"
           mode="single"
           locale={vi}
           selected={value}
