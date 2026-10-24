@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { useCurrentTime } from "@/hooks/use-current-time";
 import { calculateSalary } from "@/lib/salary";
 import { useSalaryStore } from "@/stores/salary-store";
@@ -18,7 +19,7 @@ const HomePage = () => {
           <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">Từ một tháng lương đến từng giây bạn đang sống.</p>
         </div>
         <div className="space-y-1 text-sm sm:text-right">
-          <p className="font-medium">Tháng {currentTime.getMonth() + 1}, {currentTime.getFullYear()}</p>
+          <p className="font-medium">{format(currentTime, "'Tháng' M, yyyy")}</p>
           <p className="text-xs text-muted-foreground">{calculation.daysInMonth} ngày · 24 giờ mỗi ngày</p>
         </div>
       </div>

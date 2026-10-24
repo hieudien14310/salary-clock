@@ -1,10 +1,11 @@
+import { differenceInCalendarDays, differenceInSeconds, getDate, getDaysInMonth, lastDayOfMonth, startOfDay } from "date-fns";
+
 export const MAX_MONTHLY_SALARY = 999_999_999_999;
 
 const HOURS_PER_DAY = 24;
 const MINUTES_PER_HOUR = 60;
 const SECONDS_PER_MINUTE = 60;
-const SECONDS_PER_HOUR = MINUTES_PER_HOUR * SECONDS_PER_MINUTE;
-const SECONDS_PER_DAY = HOURS_PER_DAY * SECONDS_PER_HOUR;
+const SECONDS_PER_DAY = HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE;
 const INTEGER_FORMATTER = new Intl.NumberFormat("vi-VN");
 const CURRENCY_FORMATTER = new Intl.NumberFormat("vi-VN", {
   style: "currency",
@@ -36,13 +37,10 @@ export function parseSalaryInput(value: string) {
 }
 
 export function calculateSalary(monthlySalary: number, currentTime: Date) {
-  const payday = new Date(currentTime.getFullYear(), currentTime.getMonth() + 1, 0);
-  const daysInMonth = payday.getDate();
-  const secondsToday =
-    currentTime.getHours() * SECONDS_PER_HOUR +
-    currentTime.getMinutes() * SECONDS_PER_MINUTE +
-    currentTime.getSeconds();
-  const elapsedDays = currentTime.getDate() - 1 + secondsToday / SECONDS_PER_DAY;
+  const payday = lastDayOfMonth(currentTime);
+  const daysInMonth = getDaysInMonth(currentTime);
+  const secondsToday = differenceInSeconds(currentTime, startOfDay(currentTime));
+  const elapsedDays = getDate(currentTime) - 1 + secondsToday / SECONDS_PER_DAY;
   const perDay = monthlySalary / daysInMonth;
   const perHour = perDay / HOURS_PER_DAY;
   const perMinute = perHour / MINUTES_PER_HOUR;
@@ -51,7 +49,7 @@ export function calculateSalary(monthlySalary: number, currentTime: Date) {
   return {
     payday,
     daysInMonth,
-    daysUntilPayday: daysInMonth - currentTime.getDate(),
+    daysUntilPayday: differenceInCalendarDays(payday, currentTime),
     monthProgress: (elapsedDays / daysInMonth) * 100,
     earnedThisMonth: perDay * elapsedDays,
     earnedToday: perSecond * secondsToday,

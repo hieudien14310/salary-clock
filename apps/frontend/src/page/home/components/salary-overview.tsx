@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { CalendarCheck, CalendarDays, Clock3, Hourglass, Timer } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,7 +20,7 @@ type SalaryOverviewProps = {
 export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewProps) {
   const hasSalary = monthlySalary !== null;
   const displayAmount = (amount: number, showDecimals = false) => hasSalary ? formatCurrency(amount, showDecimals) : "—";
-  const paydayLabel = calculation.payday.toLocaleDateString("vi-VN");
+  const paydayLabel = format(calculation.payday, "dd/MM/yyyy");
   const progressLabel = calculation.monthProgress.toLocaleString("vi-VN", { maximumFractionDigits: 1 });
 
   return (
