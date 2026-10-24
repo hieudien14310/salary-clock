@@ -1,61 +1,80 @@
-import { useState, type FormEvent } from 'react';
-import { format } from 'date-fns';
+import { useState } from 'react';
+import { format, isValid, startOfDay, startOfMonth } from 'date-fns';
+import { Controller, useForm, useWatch, type ResolverResult } from 'react-hook-form';
 import { ArrowRight, CalendarDays, Check, HardDrive, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
+import { DatePicker } from '@/components/ui/date-picker';
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '@/components/ui/input-group';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { formatSalaryInput, getSalaryPeriod, MAX_MONTHLY_SALARY, MAX_PAYDAY_DAY, parseSalaryInput } from '@/lib/salary';
+import {
+  formatSalaryInput,
+  getSalaryPeriod,
+  parseSalaryDate,
+  parseSalaryInput,
+  SALARY_DATE_FORMAT,
+} from '@/lib/salary';
+import { createSalaryFormSchema, type SalaryFormInput, type SalaryFormValues } from '@/schema/salary-form-schema';
 import { useSalaryStore } from '@/stores/salary-store';
 
 const SALARY_SUGGESTIONS = [10_000_000, 20_000_000, 30_000_000];
-const LAST_DAY_OPTION = 'last_day';
-const PAYDAY_OPTIONS = [
-  { value: LAST_DAY_OPTION, label: 'Ngày cuối tháng' },
-  ...Array.from({ length: MAX_PAYDAY_DAY }, (_, index) => ({ value: String(index + 1), label: `Ngày ${index + 1}` })),
-];
 
 export function SalaryForm({ currentTime }: { currentTime: Date }) {
   const monthlySalary = useSalaryStore((state) => state.monthlySalary);
-  const paydayDay = useSalaryStore((state) => state.paydayDay);
+  const paydayDate = useSalaryStore((state) => state.paydayDate);
+  const periodStartDate = useSalaryStore((state) => state.periodStartDate);
   const setMonthlySalary = useSalaryStore((state) => state.setMonthlySalary);
   const setSalarySettings = useSalaryStore((state) => state.setSalarySettings);
-  const [salaryInput, setSalaryInput] = useState(() =>
-    monthlySalary === null ? '' : formatSalaryInput(monthlySalary),
+  const savedPeriod = getSalaryPeriod(
+    currentTime,
+    parseSalaryDate(paydayDate),
+    parseSalaryDate(periodStartDate) ?? undefined,
   );
-  const [draftPaydayDay, setDraftPaydayDay] = useState(paydayDay);
-  const [error, setError] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
-  const parsedSalary = parseSalaryInput(salaryInput);
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+    getValues,
+    formState: { errors, isDirty, isSubmitted },
+  } = useForm<SalaryFormInput, unknown, SalaryFormValues>({
+    defaultValues: {
+      monthlySalary: monthlySalary === null ? '' : formatSalaryInput(monthlySalary),
+      paydayDate: savedPeriod.payday,
+    },
+    resolver: (values): ResolverResult<SalaryFormInput, SalaryFormValues> => {
+      const result = createSalaryFormSchema(new Date()).safeParse(values);
+      if (result.success) return { values: result.data, errors: {} };
+
+      const fieldError = (name: keyof SalaryFormInput) => {
+        const issue = result.error.issues.find((issue) => issue.path[0] === name);
+        return issue ? { type: issue.code, message: issue.message } : undefined;
+      };
+      return {
+        values: {},
+        errors: { monthlySalary: fieldError('monthlySalary'), paydayDate: fieldError('paydayDate') },
+      };
+    },
+  });
+  const draftPayday = useWatch({ control, name: 'paydayDate' });
+  const currentPeriodStart = startOfMonth(currentTime);
+  const previewPeriod =
+    draftPayday instanceof Date && isValid(draftPayday) && startOfDay(draftPayday) >= currentPeriodStart
+      ? getSalaryPeriod(currentTime, draftPayday)
+      : null;
   const hasUnsavedChanges =
-    parsedSalary !== monthlySalary || draftPaydayDay !== paydayDay || (salaryInput !== '' && parsedSalary === null);
-  const previewPeriod = getSalaryPeriod(currentTime, draftPaydayDay);
+    isDirty || (monthlySalary !== null && periodStartDate !== format(currentPeriodStart, SALARY_DATE_FORMAT));
 
-  function updateSalaryInput(value: string) {
-    setSalaryInput(value);
-    setError('');
-    setStatusMessage('');
-  }
-
-  function saveSalary(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (parsedSalary === null) {
-      setError(`Nhập số tiền nguyên từ 1 đến ${formatSalaryInput(MAX_MONTHLY_SALARY)} đồng.`);
-      return;
-    }
-
-    setSalarySettings(parsedSalary, draftPaydayDay);
-    setSalaryInput(formatSalaryInput(parsedSalary));
-    setError('');
+  function saveSalary(values: SalaryFormValues) {
+    setSalarySettings(values.monthlySalary, values.paydayDate, values.periodStart);
+    reset({ monthlySalary: formatSalaryInput(values.monthlySalary), paydayDate: values.paydayDate });
     setStatusMessage('Đã lưu mức lương và ngày nhận lương.');
   }
 
   function clearSalary() {
     setMonthlySalary(null);
-    setSalaryInput('');
-    setError('');
+    reset({ monthlySalary: '', paydayDate: getValues('paydayDate') });
     setStatusMessage('Đã xóa mức lương đã lưu.');
   }
 
@@ -66,27 +85,37 @@ export function SalaryForm({ currentTime }: { currentTime: Date }) {
           <Wallet className="size-5" aria-hidden="true" />
         </div>
         <h2 className="text-lg font-semibold">Mức lương của bạn</h2>
-        <CardDescription className="leading-relaxed">Bắt đầu với số tiền bạn nhận mỗi tháng.</CardDescription>
+        <CardDescription className="leading-relaxed">Nhập mức lương và chọn ngày bạn sẽ nhận.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6 px-6">
-        <form onSubmit={saveSalary} noValidate className="space-y-5">
+        <form onSubmit={handleSubmit(saveSalary)} noValidate className="space-y-5">
           <div className="space-y-3">
-            <Label htmlFor="monthly-salary">Lương hàng tháng</Label>
+            <Label htmlFor="monthly-salary">Mức lương</Label>
             <InputGroup className="h-12">
-              <InputGroupInput
-                id="monthly-salary"
+              <Controller
                 name="monthlySalary"
-                inputMode="numeric"
-                autoComplete="off"
-                placeholder="10.000.000"
-                value={salaryInput}
-                onChange={(event) => updateSalaryInput(event.target.value)}
-                onBlur={() => {
-                  if (parsedSalary !== null) setSalaryInput(formatSalaryInput(parsedSalary));
-                }}
-                aria-invalid={Boolean(error)}
-                aria-describedby={error ? 'salary-error' : 'salary-hint'}
-                className="h-full text-lg font-medium tabular-nums md:text-lg"
+                control={control}
+                render={({ field }) => (
+                  <InputGroupInput
+                    {...field}
+                    id="monthly-salary"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    placeholder="10.000.000"
+                    onChange={(event) => {
+                      field.onChange(event);
+                      setStatusMessage('');
+                    }}
+                    onBlur={() => {
+                      const amount = parseSalaryInput(field.value);
+                      if (amount !== null) field.onChange(formatSalaryInput(amount));
+                      field.onBlur();
+                    }}
+                    aria-invalid={Boolean(errors.monthlySalary)}
+                    aria-describedby={errors.monthlySalary ? 'salary-error' : 'salary-hint'}
+                    className="h-full text-lg font-medium tabular-nums md:text-lg"
+                  />
+                )}
               />
               <InputGroupAddon align="inline-end" className="pr-3">
                 <InputGroupText>VND</InputGroupText>
@@ -95,9 +124,9 @@ export function SalaryForm({ currentTime }: { currentTime: Date }) {
             <p id="salary-hint" className="text-xs leading-relaxed text-muted-foreground">
               Nhập số tiền bằng đồng, ví dụ 10.000.000.
             </p>
-            {error && (
+            {errors.monthlySalary && (
               <p id="salary-error" role="alert" className="text-xs leading-relaxed text-destructive">
-                {error}
+                {errors.monthlySalary.message}
               </p>
             )}
             <div className="flex flex-wrap gap-2" aria-label="Mức lương gợi ý">
@@ -107,7 +136,13 @@ export function SalaryForm({ currentTime }: { currentTime: Date }) {
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => updateSalaryInput(formatSalaryInput(amount))}
+                  onClick={() => {
+                    setValue('monthlySalary', formatSalaryInput(amount), {
+                      shouldDirty: true,
+                      shouldValidate: isSubmitted,
+                    });
+                    setStatusMessage('');
+                  }}
                 >
                   {amount / 1_000_000} triệu
                 </Button>
@@ -115,42 +150,48 @@ export function SalaryForm({ currentTime }: { currentTime: Date }) {
             </div>
           </div>
           <div className="space-y-3">
-            <Label htmlFor="payday-day">Ngày nhận lương hàng tháng</Label>
-            <Select
-              items={PAYDAY_OPTIONS}
-              value={draftPaydayDay === null ? LAST_DAY_OPTION : String(draftPaydayDay)}
-              onValueChange={(value) => {
-                if (value === null) return;
-                setDraftPaydayDay(value === LAST_DAY_OPTION ? null : Number(value));
-                setStatusMessage('');
-              }}
-            >
-              <SelectTrigger id="payday-day" aria-describedby="payday-hint" className="h-10 w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent alignItemWithTrigger={false}>
-                {PAYDAY_OPTIONS.map(({ value, label }) => (
-                  <SelectItem key={value} value={value}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label htmlFor="payday-date">Ngày nhận lương</Label>
+            <Controller
+              name="paydayDate"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  id="payday-date"
+                  ref={field.ref}
+                  value={field.value}
+                  onBlur={field.onBlur}
+                  onChange={(date) => {
+                    field.onChange(date);
+                    setStatusMessage('');
+                  }}
+                  aria-invalid={Boolean(errors.paydayDate)}
+                  aria-describedby={errors.paydayDate ? 'payday-error' : 'payday-hint'}
+                />
+              )}
+            />
             <p id="payday-hint" className="text-xs leading-relaxed text-muted-foreground">
-              Nếu tháng không có ngày đã chọn, dùng ngày cuối tháng đó.
+              Chọn từ {format(currentPeriodStart, 'dd/MM/yyyy')} trở đi. Có thể chọn ngày đã qua trong tháng hoặc ngày ở
+              tháng sau.
             </p>
-            <div className="flex gap-3 rounded-lg border bg-muted/30 p-3">
-              <CalendarDays className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Kỳ tính lương tháng này</p>
-                <p className="text-sm font-medium tabular-nums">
-                  {format(previewPeriod.periodStart, 'dd/MM')} – {format(previewPeriod.payday, 'dd/MM/yyyy')}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {previewPeriod.daysInPeriod} ngày, tính cả ngày nhận lương.
-                </p>
+            {errors.paydayDate && (
+              <p id="payday-error" role="alert" className="text-xs leading-relaxed text-destructive">
+                {errors.paydayDate.message}
+              </p>
+            )}
+            {previewPeriod && (
+              <div className="flex gap-3 rounded-lg border bg-muted/30 p-3">
+                <CalendarDays className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Kỳ tính khi lưu</p>
+                  <p className="text-sm font-medium tabular-nums">
+                    {format(previewPeriod.periodStart, 'dd/MM/yyyy')} – {format(previewPeriod.payday, 'dd/MM/yyyy')}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {previewPeriod.daysInPeriod} ngày, tính cả ngày nhận lương.
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
           <Button type="submit" className="h-10 w-full" disabled={monthlySalary !== null && !hasUnsavedChanges}>
             {monthlySalary === null ? 'Bắt đầu quy đổi' : hasUnsavedChanges ? 'Lưu thay đổi' : 'Đã lưu thông tin'}
@@ -170,7 +211,7 @@ export function SalaryForm({ currentTime }: { currentTime: Date }) {
         <div className="space-y-3 border-t pt-5">
           <p className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
             <HardDrive className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-            Mức lương và ngày nhận lương được lưu trong trình duyệt này cho lần truy cập tiếp theo.
+            Mức lương và kỳ tính được lưu trong trình duyệt này cho lần truy cập tiếp theo.
           </p>
           {monthlySalary !== null && (
             <Button

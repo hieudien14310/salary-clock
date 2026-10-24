@@ -1,9 +1,7 @@
-import { differenceInCalendarDays, getDate, getDaysInMonth, setDate, startOfMonth } from 'date-fns';
+import { differenceInCalendarDays, isValid, lastDayOfMonth, parseISO, startOfDay, startOfMonth } from 'date-fns';
 
 export const MAX_MONTHLY_SALARY = 999_999_999_999;
-export const MAX_PAYDAY_DAY = 31;
-
-export type PaydayDay = number | null;
+export const SALARY_DATE_FORMAT = 'yyyy-MM-dd';
 
 const HOURS_PER_DAY = 24;
 const MINUTES_PER_HOUR = 60;
@@ -31,9 +29,6 @@ export const formatCurrency = (amount: number, showDecimals = false) =>
 export const isValidMonthlySalary = (amount: unknown): amount is number =>
   typeof amount === 'number' && Number.isSafeInteger(amount) && amount > 0 && amount <= MAX_MONTHLY_SALARY;
 
-export const isValidPaydayDay = (day: unknown): day is PaydayDay =>
-  day === null || (typeof day === 'number' && Number.isInteger(day) && day >= 1 && day <= MAX_PAYDAY_DAY);
-
 export function parseSalaryInput(value: string) {
   const salaryText = value.trim();
 
@@ -43,27 +38,41 @@ export function parseSalaryInput(value: string) {
   return isValidMonthlySalary(amount) ? amount : null;
 }
 
-export function getSalaryPeriod(currentTime: Date, paydayDay: PaydayDay = null) {
-  const daysInMonth = getDaysInMonth(currentTime);
-  const daysInPeriod = Math.min(paydayDay ?? daysInMonth, daysInMonth);
-  const periodStart = startOfMonth(currentTime);
+export function parseSalaryDate(value: unknown) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const date = parseISO(value);
+  return isValid(date) ? date : null;
+}
+
+export function getSalaryPeriod(
+  currentTime: Date,
+  paydayDate: Date | null = null,
+  periodStartDate: Date = startOfMonth(currentTime),
+) {
+  const periodStart = startOfDay(periodStartDate);
+  const payday = startOfDay(paydayDate ?? lastDayOfMonth(currentTime));
 
   return {
     periodStart,
-    payday: setDate(periodStart, daysInPeriod),
-    daysInPeriod,
+    payday,
+    daysInPeriod: differenceInCalendarDays(payday, periodStart) + 1,
   };
 }
 
-export function calculateSalary(monthlySalary: number, currentTime: Date, paydayDay: PaydayDay = null) {
-  const period = getSalaryPeriod(currentTime, paydayDay);
+export function calculateSalary(
+  monthlySalary: number,
+  currentTime: Date,
+  paydayDate: Date | null = null,
+  periodStartDate?: Date,
+) {
+  const period = getSalaryPeriod(currentTime, paydayDate, periodStartDate);
   const secondsToday =
     currentTime.getHours() * SECONDS_PER_HOUR +
     currentTime.getMinutes() * SECONDS_PER_MINUTE +
     currentTime.getSeconds();
-  const elapsedDays = getDate(currentTime) - 1 + secondsToday / SECONDS_PER_DAY;
-  const periodFraction = Math.min(elapsedDays / period.daysInPeriod, 1);
-  const isPeriodComplete = getDate(currentTime) > period.daysInPeriod;
+  const elapsedDays = differenceInCalendarDays(currentTime, period.periodStart) + secondsToday / SECONDS_PER_DAY;
+  const periodFraction = Math.max(0, Math.min(elapsedDays / period.daysInPeriod, 1));
+  const isPeriodComplete = differenceInCalendarDays(currentTime, period.payday) > 0;
   const perDay = monthlySalary / period.daysInPeriod;
   const perHour = perDay / HOURS_PER_DAY;
   const perMinute = perHour / MINUTES_PER_HOUR;
@@ -74,7 +83,7 @@ export function calculateSalary(monthlySalary: number, currentTime: Date, payday
     daysUntilPayday: differenceInCalendarDays(period.payday, currentTime),
     periodProgress: periodFraction * 100,
     isPeriodComplete,
-    earnedThisMonth: monthlySalary * periodFraction,
+    earnedInPeriod: monthlySalary * periodFraction,
     earnedToday: isPeriodComplete ? 0 : perSecond * secondsToday,
     perDay,
     perHour,

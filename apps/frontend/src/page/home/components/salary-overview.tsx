@@ -40,12 +40,12 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
               className="break-words text-4xl leading-tight font-semibold tracking-tight tabular-nums sm:text-5xl lg:text-6xl"
               aria-live="off"
             >
-              {displayAmount(calculation.earnedThisMonth)}
+              {displayAmount(calculation.earnedInPeriod)}
             </p>
             <p className="text-sm leading-relaxed text-muted-foreground">
               {hasSalary
                 ? calculation.isPeriodComplete
-                  ? 'Đã tích lũy đủ lương của kỳ này. Kỳ mới bắt đầu vào ngày 01 tháng sau.'
+                  ? 'Đã tích lũy đủ lương của kỳ này. Chọn ngày nhận lương mới để tính kỳ tiếp theo.'
                   : 'Tính từ ngày 01 đến hết ngày nhận lương bạn đã chọn.'
                 : 'Nhập và lưu mức lương để thấy thời gian của bạn thành tiền.'}
             </p>
@@ -57,8 +57,8 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
             </div>
             <Progress value={calculation.periodProgress} aria-label="Tiến trình kỳ lương" />
             <div className="flex justify-between gap-3 text-xs text-muted-foreground">
-              <span>Ngày 01</span>
-              <span>Ngày {format(calculation.payday, 'dd')}</span>
+              <span>{format(calculation.periodStart, 'dd/MM/yyyy')}</span>
+              <span>{format(calculation.payday, 'dd/MM/yyyy')}</span>
             </div>
           </div>
         </CardContent>
@@ -112,7 +112,7 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
               <CalendarCheck className="size-5" aria-hidden="true" />
             </div>
             <div className="space-y-1">
-              <h2 className="text-xs text-muted-foreground">Ngày nhận lương tháng này</h2>
+              <h2 className="text-xs text-muted-foreground">Ngày nhận lương đã chọn</h2>
               <p className="font-medium tabular-nums">{paydayLabel}</p>
             </div>
           </div>
@@ -127,10 +127,10 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
       </Card>
 
       <p className="text-xs leading-relaxed text-muted-foreground">
-        Cách tính: lương tháng ÷ {calculation.daysInPeriod} ngày ÷ 24 giờ ÷ 60 phút ÷ 60 giây. Kỳ tính bắt đầu từ ngày
-        01 đến hết ngày {format(calculation.payday, 'dd')}, tính cả cuối tuần và ngày nghỉ, theo giờ thiết bị. Sau kỳ
-        này, tích lũy giữ ở mức đủ lương, thu nhập phát sinh trong ngày bằng 0 và bắt đầu lại vào ngày 01 tháng sau. Số
-        tiền tích lũy là ước tính, không phải số dư đã nhận.
+        Cách tính: lương ÷ {calculation.daysInPeriod} ngày ÷ 24 giờ ÷ 60 phút ÷ 60 giây. Kỳ tính từ{' '}
+        {format(calculation.periodStart, 'dd/MM/yyyy')} đến hết {format(calculation.payday, 'dd/MM/yyyy')}, gồm cả cuối
+        tuần và ngày nghỉ. Sau kỳ này, tích lũy giữ ở mức đủ lương, thu nhập phát sinh trong ngày bằng 0. Chọn ngày nhận
+        lương mới để bắt đầu kỳ tiếp theo từ ngày 01 của tháng hiện tại. Số tiền tích lũy là ước tính.
       </p>
     </div>
   );

@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { useCurrentTime } from '@/hooks/use-current-time';
-import { calculateSalary } from '@/lib/salary';
+import { calculateSalary, parseSalaryDate } from '@/lib/salary';
 import { useSalaryStore } from '@/stores/salary-store';
 import { SalaryForm } from './components/salary-form';
 import { SalaryOverview } from './components/salary-overview';
@@ -8,8 +8,14 @@ import { SalaryOverview } from './components/salary-overview';
 const HomePage = () => {
   const currentTime = useCurrentTime();
   const monthlySalary = useSalaryStore((state) => state.monthlySalary);
-  const paydayDay = useSalaryStore((state) => state.paydayDay);
-  const calculation = calculateSalary(monthlySalary ?? 0, currentTime, paydayDay);
+  const paydayDate = useSalaryStore((state) => state.paydayDate);
+  const periodStartDate = useSalaryStore((state) => state.periodStartDate);
+  const calculation = calculateSalary(
+    monthlySalary ?? 0,
+    currentTime,
+    parseSalaryDate(paydayDate),
+    parseSalaryDate(periodStartDate) ?? undefined,
+  );
 
   return (
     <main className="flex-1 px-5 py-8 sm:px-8 sm:py-12">
@@ -22,7 +28,9 @@ const HomePage = () => {
           </p>
         </div>
         <div className="space-y-1 text-sm sm:text-right">
-          <p className="font-medium">{format(currentTime, "'Tháng' M, yyyy")}</p>
+          <p className="font-medium">
+            {format(calculation.periodStart, 'dd/MM/yyyy')} – {format(calculation.payday, 'dd/MM/yyyy')}
+          </p>
           <p className="text-xs text-muted-foreground">{calculation.daysInPeriod} ngày trong kỳ · 24 giờ mỗi ngày</p>
         </div>
       </div>
