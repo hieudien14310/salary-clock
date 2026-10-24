@@ -1,0 +1,9 @@
+{
+  "name": "salary",
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*"
+    ]
+  }
+}
