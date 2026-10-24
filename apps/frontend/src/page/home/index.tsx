@@ -10,11 +10,13 @@ const HomePage = () => {
   const monthlySalary = useSalaryStore((state) => state.monthlySalary);
   const paydayDate = useSalaryStore((state) => state.paydayDate);
   const periodStartDate = useSalaryStore((state) => state.periodStartDate);
+  const hasReceivedSalary = useSalaryStore((state) => state.hasReceivedSalary);
   const calculation = calculateSalary(
     monthlySalary ?? 0,
     currentTime,
     parseSalaryDate(paydayDate),
     parseSalaryDate(periodStartDate) ?? undefined,
+    hasReceivedSalary,
   );
 
   return (

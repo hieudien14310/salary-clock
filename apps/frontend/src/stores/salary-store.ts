@@ -1,39 +1,75 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { format, getDaysInMonth, isValid, setDate, startOfMonth } from 'date-fns';
-import { isValidMonthlySalary, parseSalaryDate, SALARY_DATE_FORMAT } from '@/lib/salary';
+import { format, getDaysInMonth, isSameDay, isValid, setDate, startOfMonth } from 'date-fns';
+import { getSalaryPeriod, isValidMonthlySalary, parseSalaryDate, SALARY_DATE_FORMAT } from '@/lib/salary';
 
 type SalaryState = {
   monthlySalary: number | null;
   paydayDate: string | null;
   periodStartDate: string | null;
+  hasReceivedSalary: boolean;
   setMonthlySalary: (amount: number | null) => void;
   setSalarySettings: (amount: number, paydayDate: Date, periodStart: Date) => void;
+  markSalaryReceived: () => void;
 };
 
 export const useSalaryStore = create<SalaryState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       monthlySalary: null,
       paydayDate: null,
       periodStartDate: null,
+      hasReceivedSalary: false,
       setMonthlySalary: (amount) => {
-        if (amount === null || isValidMonthlySalary(amount)) set({ monthlySalary: amount });
+        if (amount === null || isValidMonthlySalary(amount)) {
+          set({ monthlySalary: amount, hasReceivedSalary: amount !== null && get().hasReceivedSalary });
+        }
       },
       setSalarySettings: (amount, paydayDate, periodStart) => {
         if (!isValidMonthlySalary(amount) || !isValid(paydayDate) || !isValid(periodStart)) return;
         if (periodStart.getDate() !== 1 || paydayDate < periodStart) return;
 
+        const nextPaydayDate = format(paydayDate, SALARY_DATE_FORMAT);
+        const nextPeriodStartDate = format(periodStart, SALARY_DATE_FORMAT);
+        const currentSettings = get();
+
         set({
           monthlySalary: amount,
-          paydayDate: format(paydayDate, SALARY_DATE_FORMAT),
-          periodStartDate: format(periodStart, SALARY_DATE_FORMAT),
+          paydayDate: nextPaydayDate,
+          periodStartDate: nextPeriodStartDate,
+          hasReceivedSalary:
+            currentSettings.hasReceivedSalary &&
+            currentSettings.paydayDate === nextPaydayDate &&
+            currentSettings.periodStartDate === nextPeriodStartDate,
+        });
+      },
+      markSalaryReceived: () => {
+        const { monthlySalary, paydayDate, periodStartDate, hasReceivedSalary } = get();
+        if (!isValidMonthlySalary(monthlySalary) || hasReceivedSalary) return;
+
+        const currentTime = new Date();
+        const period = getSalaryPeriod(
+          currentTime,
+          parseSalaryDate(paydayDate),
+          parseSalaryDate(periodStartDate) ?? undefined,
+        );
+        if (!isSameDay(period.payday, currentTime)) return;
+
+        set({
+          hasReceivedSalary: true,
+          paydayDate: format(period.payday, SALARY_DATE_FORMAT),
+          periodStartDate: format(period.periodStart, SALARY_DATE_FORMAT),
         });
       },
     }),
     {
       name: 'salary-settings',
-      partialize: ({ monthlySalary, paydayDate, periodStartDate }) => ({ monthlySalary, paydayDate, periodStartDate }),
+      partialize: ({ monthlySalary, paydayDate, periodStartDate, hasReceivedSalary }) => ({
+        monthlySalary,
+        paydayDate,
+        periodStartDate,
+        hasReceivedSalary,
+      }),
       merge: (persistedState, currentState) => {
         const savedSettings = persistedState as (Partial<SalaryState> & { paydayDay?: unknown }) | null;
         let payday = parseSalaryDate(savedSettings?.paydayDate);
@@ -62,6 +98,10 @@ export const useSalaryStore = create<SalaryState>()(
           ...currentState,
           ...savedPeriod,
           monthlySalary: isValidMonthlySalary(savedSettings?.monthlySalary) ? savedSettings.monthlySalary : null,
+          hasReceivedSalary:
+            savedSettings?.hasReceivedSalary === true &&
+            isValidMonthlySalary(savedSettings?.monthlySalary) &&
+            savedPeriod.paydayDate !== null,
         };
       },
     },

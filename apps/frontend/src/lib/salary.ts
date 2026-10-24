@@ -64,6 +64,7 @@ export function calculateSalary(
   currentTime: Date,
   paydayDate: Date | null = null,
   periodStartDate?: Date,
+  hasReceivedSalary = false,
 ) {
   const period = getSalaryPeriod(currentTime, paydayDate, periodStartDate);
   const secondsToday =
@@ -71,8 +72,8 @@ export function calculateSalary(
     currentTime.getMinutes() * SECONDS_PER_MINUTE +
     currentTime.getSeconds();
   const elapsedDays = differenceInCalendarDays(currentTime, period.periodStart) + secondsToday / SECONDS_PER_DAY;
-  const periodFraction = Math.max(0, Math.min(elapsedDays / period.daysInPeriod, 1));
-  const isPeriodComplete = differenceInCalendarDays(currentTime, period.payday) > 0;
+  const isPeriodComplete = hasReceivedSalary || differenceInCalendarDays(currentTime, period.payday) > 0;
+  const periodFraction = isPeriodComplete ? 1 : Math.max(0, Math.min(elapsedDays / period.daysInPeriod, 1));
   const perDay = monthlySalary / period.daysInPeriod;
   const perHour = perDay / HOURS_PER_DAY;
   const perMinute = perHour / MINUTES_PER_HOUR;
@@ -83,6 +84,7 @@ export function calculateSalary(
     daysUntilPayday: differenceInCalendarDays(period.payday, currentTime),
     periodProgress: periodFraction * 100,
     isPeriodComplete,
+    hasReceivedSalary,
     earnedInPeriod: monthlySalary * periodFraction,
     earnedToday: isPeriodComplete ? 0 : perSecond * secondsToday,
     perDay,

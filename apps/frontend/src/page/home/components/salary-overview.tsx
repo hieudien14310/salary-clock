@@ -1,9 +1,11 @@
 import { format } from 'date-fns';
 import { CalendarCheck, CalendarDays, Clock3, Hourglass, Timer } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { formatCurrency, type SalaryCalculation } from '@/lib/salary';
+import { useSalaryStore } from '@/stores/salary-store';
 
 const RATE_UNITS = [
   { key: 'perSecond', label: 'Mỗi giây', detail: '1 giây', icon: Timer },
@@ -18,6 +20,7 @@ type SalaryOverviewProps = {
 };
 
 export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewProps) {
+  const markSalaryReceived = useSalaryStore((state) => state.markSalaryReceived);
   const hasSalary = monthlySalary !== null;
   const displayAmount = (amount: number, showDecimals = false) =>
     hasSalary ? formatCurrency(amount, showDecimals) : '—';
@@ -40,9 +43,11 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
             </p>
             <p className="text-sm leading-relaxed text-muted-foreground">
               {hasSalary
-                ? calculation.isPeriodComplete
-                  ? 'Đã tích lũy đủ lương của kỳ này. Chọn ngày nhận lương mới để tính kỳ tiếp theo.'
-                  : 'Tính từ ngày 01 đến hết ngày nhận lương bạn đã chọn.'
+                ? calculation.hasReceivedSalary
+                  ? 'Bạn đã xác nhận nhận đủ lương. Kỳ tính đã kết thúc.'
+                  : calculation.isPeriodComplete
+                    ? 'Đã tích lũy đủ lương của kỳ này. Chọn ngày nhận lương mới để tính kỳ tiếp theo.'
+                    : 'Tính từ ngày 01 đến hết ngày nhận lương bạn đã chọn.'
                 : 'Nhập và lưu mức lương để thấy thời gian của bạn thành tiền.'}
             </p>
           </div>
@@ -112,13 +117,22 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
               <p className="font-medium tabular-nums">{paydayLabel}</p>
             </div>
           </div>
-          <Badge variant="secondary" className="h-auto px-3 py-1.5">
-            {calculation.daysUntilPayday < 0
-              ? 'Đã qua ngày nhận lương'
-              : calculation.daysUntilPayday === 0
-                ? 'Hôm nay là ngày nhận lương'
-                : `Còn ${calculation.daysUntilPayday} ngày`}
-          </Badge>
+          <div className="flex flex-wrap items-center gap-2" role="status">
+            <Badge variant="secondary" className="h-auto px-3 py-1.5">
+              {calculation.hasReceivedSalary
+                ? 'Đã nhận lương'
+                : calculation.daysUntilPayday < 0
+                  ? 'Đã qua ngày nhận lương'
+                  : calculation.daysUntilPayday === 0
+                    ? 'Hôm nay là ngày nhận lương'
+                    : `Còn ${calculation.daysUntilPayday} ngày`}
+            </Badge>
+            {hasSalary && calculation.daysUntilPayday === 0 && !calculation.isPeriodComplete && (
+              <Button type="button" onClick={markSalaryReceived}>
+                Đã nhận lương
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
 
