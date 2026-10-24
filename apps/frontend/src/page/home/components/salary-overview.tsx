@@ -30,10 +30,6 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
         <CardContent className="space-y-7 p-5 sm:p-7">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-sm font-medium text-muted-foreground">Tích lũy ước tính trong kỳ</h2>
-            <Badge variant="outline" className="gap-1.5 py-3">
-              <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
-              {!hasSalary ? 'Chờ mức lương' : calculation.isPeriodComplete ? 'Đã kết thúc kỳ' : 'Cập nhật mỗi giây'}
-            </Badge>
           </div>
           <div className="space-y-3">
             <p
