@@ -8,7 +8,9 @@
     "dev": "bunx --bun vite --host",
     "build": "bunx --bun vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "fmt:check": "oxfmt --check",
+    "fmt": "oxfmt"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
