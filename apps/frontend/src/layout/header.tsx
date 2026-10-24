@@ -1,14 +1,13 @@
-import { Clock3, Moon, Sun } from "lucide-react";
-import { Link } from "react-router";
-import { Button } from "@/components/ui/button";
-import { useTheme } from "@/components/theme-provider";
-import PATH from "@/constants/path";
+import { Clock3, Moon, Sun } from 'lucide-react';
+import { Link } from 'react-router';
+import { Button } from '@/components/ui/button';
+import { useTheme } from '@/components/theme-provider';
+import PATH from '@/constants/path';
 
 const Header = () => {
   const { theme, setTheme } = useTheme();
   const isDarkMode =
-    theme === "dark" ||
-    (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   return (
     <header className="border-b">
@@ -26,15 +25,13 @@ const Header = () => {
           </span>
         </Link>
         <div className="flex items-center gap-5">
-          <span className="hidden text-xs text-muted-foreground sm:inline">
-            Mỗi giây đều có giá trị.
-          </span>
+          <span className="hidden text-xs text-muted-foreground sm:inline">Mỗi giây đều có giá trị.</span>
           <Button
             type="button"
             variant="outline"
             size="icon"
-            aria-label={isDarkMode ? "Chuyển sang giao diện sáng" : "Chuyển sang giao diện tối"}
-            onClick={() => setTheme(isDarkMode ? "light" : "dark")}
+            aria-label={isDarkMode ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'}
+            onClick={() => setTheme(isDarkMode ? 'light' : 'dark')}
           >
             {isDarkMode ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
           </Button>
@@ -45,4 +42,3 @@ const Header = () => {
 };
 
 export default Header;
-

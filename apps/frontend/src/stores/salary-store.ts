@@ -1,6 +1,6 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { isValidMonthlySalary } from "@/lib/salary";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { isValidMonthlySalary } from '@/lib/salary';
 
 type SalaryState = {
   monthlySalary: number | null;
@@ -16,7 +16,7 @@ export const useSalaryStore = create<SalaryState>()(
       },
     }),
     {
-      name: "salary-settings",
+      name: 'salary-settings',
       partialize: ({ monthlySalary }) => ({ monthlySalary }),
       merge: (persistedState, currentState) => {
         const savedSalary = (persistedState as Partial<SalaryState> | null)?.monthlySalary;

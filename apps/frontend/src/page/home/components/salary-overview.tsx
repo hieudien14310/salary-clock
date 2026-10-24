@@ -1,15 +1,15 @@
-import { format } from "date-fns";
-import { CalendarCheck, CalendarDays, Clock3, Hourglass, Timer } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { formatCurrency, type SalaryCalculation } from "@/lib/salary";
+import { format } from 'date-fns';
+import { CalendarCheck, CalendarDays, Clock3, Hourglass, Timer } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { formatCurrency, type SalaryCalculation } from '@/lib/salary';
 
 const RATE_UNITS = [
-  { key: "perSecond", label: "Mỗi giây", detail: "1 giây", icon: Timer },
-  { key: "perMinute", label: "Mỗi phút", detail: "60 giây", icon: Hourglass },
-  { key: "perHour", label: "Mỗi giờ", detail: "60 phút", icon: Clock3 },
-  { key: "perDay", label: "Mỗi ngày", detail: "24 giờ", icon: CalendarDays },
+  { key: 'perSecond', label: 'Mỗi giây', detail: '1 giây', icon: Timer },
+  { key: 'perMinute', label: 'Mỗi phút', detail: '60 giây', icon: Hourglass },
+  { key: 'perHour', label: 'Mỗi giờ', detail: '60 phút', icon: Clock3 },
+  { key: 'perDay', label: 'Mỗi ngày', detail: '24 giờ', icon: CalendarDays },
 ] as const;
 
 type SalaryOverviewProps = {
@@ -19,9 +19,10 @@ type SalaryOverviewProps = {
 
 export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewProps) {
   const hasSalary = monthlySalary !== null;
-  const displayAmount = (amount: number, showDecimals = false) => hasSalary ? formatCurrency(amount, showDecimals) : "—";
-  const paydayLabel = format(calculation.payday, "dd/MM/yyyy");
-  const progressLabel = calculation.monthProgress.toLocaleString("vi-VN", { maximumFractionDigits: 1 });
+  const displayAmount = (amount: number, showDecimals = false) =>
+    hasSalary ? formatCurrency(amount, showDecimals) : '—';
+  const paydayLabel = format(calculation.payday, 'dd/MM/yyyy');
+  const progressLabel = calculation.monthProgress.toLocaleString('vi-VN', { maximumFractionDigits: 1 });
 
   return (
     <div className="min-w-0 space-y-6">
@@ -31,15 +32,20 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
             <h2 className="text-sm font-medium text-muted-foreground">Tích lũy ước tính trong tháng</h2>
             <Badge variant="outline" className="gap-1.5 py-3">
               <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
-              {hasSalary ? "Cập nhật mỗi giây" : "Chờ mức lương"}
+              {hasSalary ? 'Cập nhật mỗi giây' : 'Chờ mức lương'}
             </Badge>
           </div>
           <div className="space-y-3">
-            <p className="break-words text-4xl leading-tight font-semibold tracking-tight tabular-nums sm:text-5xl lg:text-6xl" aria-live="off">
+            <p
+              className="break-words text-4xl leading-tight font-semibold tracking-tight tabular-nums sm:text-5xl lg:text-6xl"
+              aria-live="off"
+            >
               {displayAmount(calculation.earnedThisMonth)}
             </p>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              {hasSalary ? "Giá trị thời gian của bạn, tính từ đầu tháng đến lúc này." : "Nhập và lưu mức lương để thấy thời gian của bạn thành tiền."}
+              {hasSalary
+                ? 'Giá trị thời gian của bạn, tính từ đầu tháng đến lúc này.'
+                : 'Nhập và lưu mức lương để thấy thời gian của bạn thành tiền.'}
             </p>
           </div>
           <div className="space-y-3">
@@ -57,7 +63,9 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
         <dl className="grid grid-cols-1 border-t bg-muted/30 sm:grid-cols-2">
           <div className="space-y-2 p-5 sm:px-7">
             <dt className="text-xs text-muted-foreground">Tích lũy từ 00:00 hôm nay</dt>
-            <dd className="break-words text-xl font-medium tabular-nums" aria-live="off">{displayAmount(calculation.earnedToday)}</dd>
+            <dd className="break-words text-xl font-medium tabular-nums" aria-live="off">
+              {displayAmount(calculation.earnedToday)}
+            </dd>
           </div>
           <div className="space-y-2 border-t p-5 sm:border-t-0 sm:border-l sm:px-7">
             <dt className="text-xs text-muted-foreground">Tổng lương tháng này</dt>
@@ -68,7 +76,9 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
 
       <section aria-labelledby="salary-rates-heading" className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 id="salary-rates-heading" className="text-sm font-medium">Thời gian của bạn đáng giá bao nhiêu?</h2>
+          <h2 id="salary-rates-heading" className="text-sm font-medium">
+            Thời gian của bạn đáng giá bao nhiêu?
+          </h2>
           <span className="text-xs text-muted-foreground">VND / đơn vị thời gian</span>
         </div>
         <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 xl:grid-cols-4">
@@ -81,7 +91,9 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
                     {label}
                   </dt>
                   <dd className="space-y-1">
-                    <p className="break-words text-lg font-semibold tracking-tight tabular-nums">{displayAmount(calculation[key], true)}</p>
+                    <p className="break-words text-lg font-semibold tracking-tight tabular-nums">
+                      {displayAmount(calculation[key], true)}
+                    </p>
                     <p className="text-xs text-muted-foreground">/ {detail}</p>
                   </dd>
                 </dl>
@@ -103,15 +115,17 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
             </div>
           </div>
           <Badge variant="secondary" className="h-auto px-3 py-1.5">
-            {calculation.daysUntilPayday === 0 ? "Hôm nay là ngày nhận lương" : `Còn ${calculation.daysUntilPayday} ngày`}
+            {calculation.daysUntilPayday === 0
+              ? 'Hôm nay là ngày nhận lương'
+              : `Còn ${calculation.daysUntilPayday} ngày`}
           </Badge>
         </CardContent>
       </Card>
 
       <p className="text-xs leading-relaxed text-muted-foreground">
-        Cách tính: lương tháng ÷ {calculation.daysInMonth} ngày ÷ 24 giờ ÷ 60 phút ÷ 60 giây.
-        {" "}Tính cả cuối tuần và ngày nghỉ, theo giờ trên thiết bị của bạn. Số tiền tích lũy là ước tính, không phải số dư đã nhận.
-        {" "}Khi sang tháng mới, số ngày và ngày nhận lương tự cập nhật, tích lũy bắt đầu lại từ 0.
+        Cách tính: lương tháng ÷ {calculation.daysInMonth} ngày ÷ 24 giờ ÷ 60 phút ÷ 60 giây. Tính cả cuối tuần và ngày
+        nghỉ, theo giờ trên thiết bị của bạn. Số tiền tích lũy là ước tính, không phải số dư đã nhận. Khi sang tháng
+        mới, số ngày và ngày nhận lương tự cập nhật, tích lũy bắt đầu lại từ 0.
       </p>
     </div>
   );

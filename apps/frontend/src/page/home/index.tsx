@@ -1,9 +1,9 @@
-import { format } from "date-fns";
-import { useCurrentTime } from "@/hooks/use-current-time";
-import { calculateSalary } from "@/lib/salary";
-import { useSalaryStore } from "@/stores/salary-store";
-import { SalaryForm } from "./components/salary-form";
-import { SalaryOverview } from "./components/salary-overview";
+import { format } from 'date-fns';
+import { useCurrentTime } from '@/hooks/use-current-time';
+import { calculateSalary } from '@/lib/salary';
+import { useSalaryStore } from '@/stores/salary-store';
+import { SalaryForm } from './components/salary-form';
+import { SalaryOverview } from './components/salary-overview';
 
 const HomePage = () => {
   const currentTime = useCurrentTime();
@@ -16,7 +16,9 @@ const HomePage = () => {
         <div className="space-y-3">
           <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">Thu nhập & thời gian</p>
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Nhìn mức lương theo cách khác.</h1>
-          <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">Từ một tháng lương đến từng giây bạn đang sống.</p>
+          <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
+            Từ một tháng lương đến từng giây bạn đang sống.
+          </p>
         </div>
         <div className="space-y-1 text-sm sm:text-right">
           <p className="font-medium">{format(currentTime, "'Tháng' M, yyyy")}</p>

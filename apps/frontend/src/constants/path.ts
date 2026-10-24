@@ -1,4 +1,4 @@
 const PATH = {
-  HOME: "/",
+  HOME: '/',
 } as const;
 export default PATH;
