@@ -22,17 +22,17 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
   const displayAmount = (amount: number, showDecimals = false) =>
     hasSalary ? formatCurrency(amount, showDecimals) : '—';
   const paydayLabel = format(calculation.payday, 'dd/MM/yyyy');
-  const progressLabel = calculation.monthProgress.toLocaleString('vi-VN', { maximumFractionDigits: 1 });
+  const progressLabel = calculation.periodProgress.toLocaleString('vi-VN', { maximumFractionDigits: 1 });
 
   return (
     <div className="min-w-0 space-y-6">
       <Card className="gap-0 py-0">
         <CardContent className="space-y-7 p-5 sm:p-7">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-sm font-medium text-muted-foreground">Tích lũy ước tính trong tháng</h2>
+            <h2 className="text-sm font-medium text-muted-foreground">Tích lũy ước tính trong kỳ</h2>
             <Badge variant="outline" className="gap-1.5 py-3">
               <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
-              {hasSalary ? 'Cập nhật mỗi giây' : 'Chờ mức lương'}
+              {!hasSalary ? 'Chờ mức lương' : calculation.isPeriodComplete ? 'Đã kết thúc kỳ' : 'Cập nhật mỗi giây'}
             </Badge>
           </div>
           <div className="space-y-3">
@@ -44,19 +44,21 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
             </p>
             <p className="text-sm leading-relaxed text-muted-foreground">
               {hasSalary
-                ? 'Giá trị thời gian của bạn, tính từ đầu tháng đến lúc này.'
+                ? calculation.isPeriodComplete
+                  ? 'Đã tích lũy đủ lương của kỳ này. Kỳ mới bắt đầu vào ngày 01 tháng sau.'
+                  : 'Tính từ ngày 01 đến hết ngày nhận lương bạn đã chọn.'
                 : 'Nhập và lưu mức lương để thấy thời gian của bạn thành tiền.'}
             </p>
           </div>
           <div className="space-y-3">
             <div className="flex justify-between gap-3 text-xs text-muted-foreground">
-              <span>Tháng này đã đi qua</span>
+              <span>Tiến trình kỳ lương</span>
               <span className="tabular-nums">{progressLabel}%</span>
             </div>
-            <Progress value={calculation.monthProgress} aria-label="Thời gian đã qua trong tháng" />
+            <Progress value={calculation.periodProgress} aria-label="Tiến trình kỳ lương" />
             <div className="flex justify-between gap-3 text-xs text-muted-foreground">
               <span>Ngày 01</span>
-              <span>Ngày {calculation.daysInMonth}</span>
+              <span>Ngày {format(calculation.payday, 'dd')}</span>
             </div>
           </div>
         </CardContent>
@@ -68,7 +70,7 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
             </dd>
           </div>
           <div className="space-y-2 border-t p-5 sm:border-t-0 sm:border-l sm:px-7">
-            <dt className="text-xs text-muted-foreground">Tổng lương tháng này</dt>
+            <dt className="text-xs text-muted-foreground">Tổng lương của kỳ này</dt>
             <dd className="break-words text-xl font-medium tabular-nums">{displayAmount(monthlySalary ?? 0)}</dd>
           </div>
         </dl>
@@ -115,17 +117,20 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
             </div>
           </div>
           <Badge variant="secondary" className="h-auto px-3 py-1.5">
-            {calculation.daysUntilPayday === 0
-              ? 'Hôm nay là ngày nhận lương'
-              : `Còn ${calculation.daysUntilPayday} ngày`}
+            {calculation.daysUntilPayday < 0
+              ? 'Đã qua ngày nhận lương'
+              : calculation.daysUntilPayday === 0
+                ? 'Hôm nay là ngày nhận lương'
+                : `Còn ${calculation.daysUntilPayday} ngày`}
           </Badge>
         </CardContent>
       </Card>
 
       <p className="text-xs leading-relaxed text-muted-foreground">
-        Cách tính: lương tháng ÷ {calculation.daysInMonth} ngày ÷ 24 giờ ÷ 60 phút ÷ 60 giây. Tính cả cuối tuần và ngày
-        nghỉ, theo giờ trên thiết bị của bạn. Số tiền tích lũy là ước tính, không phải số dư đã nhận. Khi sang tháng
-        mới, số ngày và ngày nhận lương tự cập nhật, tích lũy bắt đầu lại từ 0.
+        Cách tính: lương tháng ÷ {calculation.daysInPeriod} ngày ÷ 24 giờ ÷ 60 phút ÷ 60 giây. Kỳ tính bắt đầu từ ngày
+        01 đến hết ngày {format(calculation.payday, 'dd')}, tính cả cuối tuần và ngày nghỉ, theo giờ thiết bị. Sau kỳ
+        này, tích lũy giữ ở mức đủ lương, thu nhập phát sinh trong ngày bằng 0 và bắt đầu lại vào ngày 01 tháng sau. Số
+        tiền tích lũy là ước tính, không phải số dư đã nhận.
       </p>
     </div>
   );
