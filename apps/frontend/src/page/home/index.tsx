@@ -10,31 +10,24 @@ const HomePage = () => {
   const calculation = calculateSalary(monthlySalary ?? 0, currentTime);
 
   return (
-    <>
-      <main className="px-5 py-8 sm:px-8 sm:py-12">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
-          <div className="space-y-3">
-            <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">Thu nhập & thời gian</p>
-            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Nhìn mức lương theo cách khác.</h1>
-            <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">Từ một tháng lương đến từng giây bạn đang sống.</p>
-          </div>
-          <div className="space-y-1 text-sm sm:text-right">
-            <p className="font-medium">Tháng {currentTime.getMonth() + 1}, {currentTime.getFullYear()}</p>
-            <p className="text-xs text-muted-foreground">{calculation.daysInMonth} ngày · 24 giờ mỗi ngày</p>
-          </div>
+    <main className="flex-1 px-5 py-8 sm:px-8 sm:py-12">
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
+        <div className="space-y-3">
+          <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">Thu nhập & thời gian</p>
+          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Nhìn mức lương theo cách khác.</h1>
+          <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">Từ một tháng lương đến từng giây bạn đang sống.</p>
         </div>
-
-        <div className="grid items-start gap-6 lg:grid-cols-[320px_minmax(0,1fr)] xl:grid-cols-[340px_minmax(0,1fr)] lg:gap-8">
-          <SalaryForm />
-          <SalaryOverview monthlySalary={monthlySalary} calculation={calculation} />
+        <div className="space-y-1 text-sm sm:text-right">
+          <p className="font-medium">Tháng {currentTime.getMonth() + 1}, {currentTime.getFullYear()}</p>
+          <p className="text-xs text-muted-foreground">{calculation.daysInMonth} ngày · 24 giờ mỗi ngày</p>
         </div>
-      </main>
+      </div>
 
-      <footer className="flex flex-wrap justify-between gap-2 border-t px-5 py-5 text-xs text-muted-foreground sm:px-8">
-        <span>Salary · Giá trị của từng khoảnh khắc.</span>
-        <span>Không cần tài khoản. Bắt đầu bằng mức lương của bạn.</span>
-      </footer>
-    </>
+      <div className="grid items-start gap-6 lg:grid-cols-[320px_minmax(0,1fr)] xl:grid-cols-[340px_minmax(0,1fr)] lg:gap-8">
+        <SalaryForm />
+        <SalaryOverview monthlySalary={monthlySalary} calculation={calculation} />
+      </div>
+    </main>
   );
 };
 

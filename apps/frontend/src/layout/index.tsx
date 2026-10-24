@@ -1,13 +1,15 @@
 import { Outlet } from "react-router";
-import { Fragment } from "react/jsx-runtime";
 import Header from "@/layout/header";
+import Footer from "@/layout/footer";
 
 const Layout = () => {
   return (
-    <Fragment>
+    <div className="flex min-h-svh flex-col bg-background">
       <Header />
       <Outlet />
-    </Fragment>
+      <Footer />
+    </div>
   );
 };
+
 export default Layout;
