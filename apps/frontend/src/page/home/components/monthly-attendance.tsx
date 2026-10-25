@@ -53,7 +53,6 @@ export function MonthlyAttendance({ month }: { month: Date }) {
             <Minus className="size-3.5" aria-hidden="true" /> Không chấm công
           </span>
         </div>
-        <p className="text-xs text-muted-foreground">Bấm vào ngày để đổi trạng thái chấm công.</p>
       </CardContent>
     </Card>
   );
