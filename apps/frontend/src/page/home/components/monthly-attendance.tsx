@@ -90,10 +90,6 @@ export function MonthlyAttendance({ periodStart, payday }: { periodStart: Date; 
             <Minus className="size-3.5" aria-hidden="true" /> Không tính lương
           </span>
         </div>
-        <p className="text-xs leading-relaxed text-muted-foreground">
-          Bấm vào ngày để đổi trạng thái. Các ngày ngoài kỳ {format(periodStart, 'dd/MM/yyyy')} –{' '}
-          {format(payday, 'dd/MM/yyyy')} được làm mờ.
-        </p>
       </CardContent>
     </Card>
   );
