@@ -42,6 +42,8 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
               aria-live="off"
             >
               {displayAmount(calculation.earnedInPeriod)}
+              {' / '}
+              {displayAmount(monthlySalary ?? 0)}
             </p>
             <p className="text-sm leading-relaxed text-muted-foreground">
               {hasSalary
@@ -65,7 +67,7 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
             </div>
           </div>
         </CardContent>
-        <dl className="grid grid-cols-1 border-t bg-muted/30 sm:grid-cols-2">
+        <dl className="grid grid-cols-1 border-t bg-muted/30 sm:grid-cols-3">
           <div className="space-y-2 p-5 sm:px-7">
             <dt className="text-xs text-muted-foreground">Tích lũy của hôm nay</dt>
             <dd className="break-words text-xl font-medium tabular-nums" aria-live="off">
@@ -78,11 +80,7 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
             </dt>
             <dd className="break-words text-xl font-medium tabular-nums">{displayAmount(calculation.netSalary)}</dd>
           </div>
-          <div className="space-y-2 border-t p-5 sm:px-7">
-            <dt className="text-xs text-muted-foreground">Lương ban đầu</dt>
-            <dd className="break-words text-xl font-medium tabular-nums">{displayAmount(monthlySalary ?? 0)}</dd>
-          </div>
-          <div className="space-y-2 border-t p-5 sm:border-l sm:px-7">
+          <div className="space-y-2 border-t p-5 sm:border-t-0 sm:border-l sm:px-7">
             <dt className="text-xs text-muted-foreground">
               Khấu trừ · {calculation.unpaidDaysCount} ngày không tính lương
             </dt>
