@@ -48,16 +48,13 @@ export function MonthlyAttendance({ periodStart, payday, daysInPeriod, paidDaysC
     <Card className="py-5">
       <CardContent className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-sm font-medium">Chấm công trong kỳ</h2>
+          <h2 className="text-sm font-semibold">Lịch biểu chấm công</h2>
           <p role="status" className="text-xs text-muted-foreground tabular-nums">
             {paidDaysCount}/{daysInPeriod} ngày tính lương
           </p>
         </div>
-        <p className="text-xs text-muted-foreground tabular-nums">
-          {format(periodStart, 'dd/MM/yyyy')} – {format(payday, 'dd/MM/yyyy')} · {daysInPeriod} ngày
-        </p>
         <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-medium">Tháng {format(month, 'MM/yyyy')}</p>
+          <p className="text-xs font-medium">Tháng {format(month, 'MM/yyyy')}</p>
           {lastMonthOffset > 0 && (
             <div className="flex items-center gap-1">
               <Button
