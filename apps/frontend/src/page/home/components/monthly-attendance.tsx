@@ -1,9 +1,17 @@
 import { useState } from 'react';
-import { addMonths, differenceInCalendarMonths, format, getDaysInMonth, getISODay, setDate } from 'date-fns';
+import {
+  addMonths,
+  differenceInCalendarMonths,
+  format,
+  getDaysInMonth,
+  getISODay,
+  setDate,
+  startOfMonth,
+} from 'date-fns';
 import { Check, ChevronLeft, ChevronRight, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { SALARY_DATE_FORMAT } from '@/lib/salary';
+import { SALARY_DATE_FORMAT, type SalaryCalculation } from '@/lib/salary';
 import { useAttendanceStore } from '@/stores/attendance-store';
 
 const WEEKDAYS = [
@@ -16,10 +24,12 @@ const WEEKDAYS = [
   { label: 'Chủ Nhật', shortLabel: 'CN' },
 ];
 
-export function MonthlyAttendance({ periodStart, payday }: { periodStart: Date; payday: Date }) {
+type MonthlyAttendanceProps = Pick<SalaryCalculation, 'periodStart' | 'payday' | 'daysInPeriod' | 'paidDaysCount'>;
+
+export function MonthlyAttendance({ periodStart, payday, daysInPeriod, paidDaysCount }: MonthlyAttendanceProps) {
   const [monthOffset, setMonthOffset] = useState(0);
   const lastMonthOffset = differenceInCalendarMonths(payday, periodStart);
-  const month = addMonths(periodStart, monthOffset);
+  const month = addMonths(startOfMonth(periodStart), monthOffset);
   const unmarkedDates = useAttendanceStore((state) => state.unmarkedDates);
   const toggleAttendance = useAttendanceStore((state) => state.toggleAttendance);
   const unmarkedDateSet = new Set(unmarkedDates);
@@ -33,43 +43,45 @@ export function MonthlyAttendance({ periodStart, payday }: { periodStart: Date; 
       isInPeriod: date >= periodStart && date <= payday,
     };
   });
-  const daysInPeriod = days.filter(({ isInPeriod }) => isInPeriod);
-  const paidDaysCount = daysInPeriod.filter(({ isMarked }) => isMarked).length;
 
   return (
     <Card className="py-5">
       <CardContent className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <h2 className="text-sm font-medium">Chấm công tháng {format(month, 'MM/yyyy')}</h2>
-            {lastMonthOffset > 0 && (
-              <div className="flex items-center gap-1">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="Tháng chấm công trước"
-                  disabled={monthOffset === 0}
-                  onClick={() => setMonthOffset(monthOffset - 1)}
-                >
-                  <ChevronLeft aria-hidden="true" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="Tháng chấm công sau"
-                  disabled={monthOffset === lastMonthOffset}
-                  onClick={() => setMonthOffset(monthOffset + 1)}
-                >
-                  <ChevronRight aria-hidden="true" />
-                </Button>
-              </div>
-            )}
-          </div>
+          <h2 className="text-sm font-medium">Chấm công trong kỳ</h2>
           <p role="status" className="text-xs text-muted-foreground tabular-nums">
-            {paidDaysCount}/{daysInPeriod.length} ngày tính lương
+            {paidDaysCount}/{daysInPeriod} ngày tính lương
           </p>
+        </div>
+        <p className="text-xs text-muted-foreground tabular-nums">
+          {format(periodStart, 'dd/MM/yyyy')} – {format(payday, 'dd/MM/yyyy')} · {daysInPeriod} ngày
+        </p>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-sm font-medium">Tháng {format(month, 'MM/yyyy')}</p>
+          {lastMonthOffset > 0 && (
+            <div className="flex items-center gap-1">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                aria-label="Tháng chấm công trước"
+                disabled={monthOffset === 0}
+                onClick={() => setMonthOffset(monthOffset - 1)}
+              >
+                <ChevronLeft aria-hidden="true" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                aria-label="Tháng chấm công sau"
+                disabled={monthOffset === lastMonthOffset}
+                onClick={() => setMonthOffset(monthOffset + 1)}
+              >
+                <ChevronRight aria-hidden="true" />
+              </Button>
+            </div>
+          )}
         </div>
         <div className="grid grid-cols-7 gap-2">
           {WEEKDAYS.map(({ label, shortLabel }) => (

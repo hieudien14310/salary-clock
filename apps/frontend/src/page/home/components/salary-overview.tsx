@@ -108,6 +108,8 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
         key={`${calculation.periodStart.getTime()}-${calculation.payday.getTime()}`}
         periodStart={calculation.periodStart}
         payday={calculation.payday}
+        daysInPeriod={calculation.daysInPeriod}
+        paidDaysCount={calculation.paidDaysCount}
       />
 
       <Card className="py-5">
@@ -148,7 +150,7 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
           cuối tuần và ngày nghỉ. Mỗi ngày chọn “Không tính lương” bị trừ một đơn giá ngày; ngày ngoài kỳ không ảnh
           hưởng đến lương. <br /> Tiền tích lũy chỉ ghi nhận các ngày có tính lương đã trôi qua. Khi kỳ kết thúc hoặc
           xác nhận đã nhận lương, tích lũy bằng lương thực nhận sau khấu trừ và thu nhập trong ngày bằng 0. Chọn ngày
-          nhận lương mới để bắt đầu kỳ tiếp theo từ ngày 01 của tháng hiện tại. Số tiền tích lũy là ước tính.
+          bắt đầu và ngày nhận lương mới để tính kỳ tiếp theo. Số tiền tích lũy là ước tính.
         </AlertDescription>
       </Alert>
     </div>

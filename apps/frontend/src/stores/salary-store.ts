@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { format, getDaysInMonth, isSameDay, isValid, setDate, startOfMonth } from 'date-fns';
+import { format, getDaysInMonth, isSameDay, isValid, setDate, startOfDay, startOfMonth } from 'date-fns';
 import { getSalaryPeriod, isValidMonthlySalary, parseSalaryDate, SALARY_DATE_FORMAT } from '@/lib/salary';
 
 type SalaryState = {
@@ -27,7 +27,7 @@ export const useSalaryStore = create<SalaryState>()(
       },
       setSalarySettings: (amount, paydayDate, periodStart) => {
         if (!isValidMonthlySalary(amount) || !isValid(paydayDate) || !isValid(periodStart)) return;
-        if (periodStart.getDate() !== 1 || paydayDate < periodStart) return;
+        if (startOfDay(paydayDate) < startOfDay(periodStart)) return;
 
         const nextPaydayDate = format(paydayDate, SALARY_DATE_FORMAT);
         const nextPeriodStartDate = format(periodStart, SALARY_DATE_FORMAT);
@@ -88,7 +88,7 @@ export const useSalaryStore = create<SalaryState>()(
         }
 
         const savedPeriod =
-          payday && periodStart && periodStart.getDate() === 1 && payday >= periodStart
+          payday && periodStart && payday >= periodStart
             ? {
                 paydayDate: format(payday, SALARY_DATE_FORMAT),
                 periodStartDate: format(periodStart, SALARY_DATE_FORMAT),

@@ -15,9 +15,10 @@ type DatePickerProps = Pick<
 > & {
   value: Date | undefined;
   onChange: (date: Date | undefined) => void;
+  placeholder?: string;
 };
 
-export function DatePicker({ value, onChange, ...props }: DatePickerProps) {
+export function DatePicker({ value, onChange, placeholder = 'Chọn ngày', ...props }: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -31,7 +32,7 @@ export function DatePicker({ value, onChange, ...props }: DatePickerProps) {
             className="h-10 w-full justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
             {...props}
           >
-            {value ? format(value, 'dd/MM/yyyy') : <span>Chọn ngày nhận lương</span>}
+            {value ? format(value, 'dd/MM/yyyy') : <span>{placeholder}</span>}
             <ChevronDownIcon data-icon="inline-end" />
           </Button>
         }

@@ -22,6 +22,44 @@ function calculateOctoberSalary(
 }
 
 describe('salary deductions from attendance', () => {
+  test('calculates a 60-day period with a custom start, including unpaid days across all months', () => {
+    const salary = calculateSalary(
+      60_000_000,
+      new Date(2026, 9, 25, 12),
+      new Date(2026, 10, 18),
+      new Date(2026, 8, 20),
+      false,
+      ['2026-09-19', '2026-09-20', '2026-10-25', '2026-11-18', '2026-11-19'],
+    );
+
+    expect(salary.daysInPeriod).toBe(60);
+    expect(salary.perDay).toBe(1_000_000);
+    expect(salary.unpaidDaysCount).toBe(3);
+    expect(salary.paidDaysCount).toBe(57);
+    expect(salary.netSalary).toBe(57_000_000);
+    expect(salary.salaryDeduction).toBe(3_000_000);
+    expect(salary.earnedInPeriod).toBe(34_000_000);
+    expect(salary.earnedToday).toBe(0);
+  });
+
+  test('does not accrue income before a future custom period starts', () => {
+    const salary = calculateSalary(60_000_000, new Date(2026, 9, 25, 12), new Date(2027, 0, 8), new Date(2026, 10, 10));
+
+    expect(salary.daysInPeriod).toBe(60);
+    expect(salary.earnedInPeriod).toBe(0);
+    expect(salary.earnedToday).toBe(0);
+    expect(salary.periodProgress).toBe(0);
+  });
+
+  test('supports a 60-day period beginning on January 31 without shifting its start', () => {
+    const salary = calculateSalary(60_000_000, new Date(2027, 1, 28, 12), new Date(2027, 2, 31), new Date(2027, 0, 31));
+
+    expect(salary.daysInPeriod).toBe(60);
+    expect(salary.periodStart).toEqual(new Date(2027, 0, 31));
+    expect(salary.earnedInPeriod).toBe(28_500_000);
+    expect(salary.perDay).toBe(1_000_000);
+  });
+
   test('keeps the original rates and accrual when every day is paid', () => {
     const salary = calculateOctoberSalary();
 
