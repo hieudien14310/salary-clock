@@ -59,7 +59,7 @@ export function MonthlyAttendance({ periodStart, payday, daysInPeriod, paidDaysC
             <div className="flex items-center gap-1">
               <Button
                 type="button"
-                variant="ghost"
+                variant="secondary"
                 size="icon-sm"
                 aria-label="Tháng chấm công trước"
                 disabled={monthOffset === 0}
@@ -69,7 +69,7 @@ export function MonthlyAttendance({ periodStart, payday, daysInPeriod, paidDaysC
               </Button>
               <Button
                 type="button"
-                variant="ghost"
+                variant="secondary"
                 size="icon-sm"
                 aria-label="Tháng chấm công sau"
                 disabled={monthOffset === lastMonthOffset}
