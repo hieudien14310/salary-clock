@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { formatCurrency, type SalaryCalculation } from '@/lib/salary';
 import { useSalaryStore } from '@/stores/salary-store';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { MonthlyAttendance } from './monthly-attendance';
 
 const RATE_UNITS = [
   { key: 'perSecond', label: 'Mỗi giây', detail: '1 giây', icon: Timer },
@@ -106,6 +107,8 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
           ))}
         </div>
       </section>
+
+      <MonthlyAttendance month={calculation.periodStart} />
 
       <Card className="py-5">
         <CardContent className="flex flex-wrap items-center justify-between gap-4">
