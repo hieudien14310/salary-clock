@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "test": "bun test",
     "lint": "oxlint",
     "dev": "bunx --bun vite --host",
     "build": "bunx --bun vite build",

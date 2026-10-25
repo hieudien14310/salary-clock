@@ -1,4 +1,12 @@
-import { differenceInCalendarDays, isValid, lastDayOfMonth, parseISO, startOfDay, startOfMonth } from 'date-fns';
+import {
+  differenceInCalendarDays,
+  isSameDay,
+  isValid,
+  lastDayOfMonth,
+  parseISO,
+  startOfDay,
+  startOfMonth,
+} from 'date-fns';
 
 export const MAX_MONTHLY_SALARY = 999_999_999_999;
 export const SALARY_DATE_FORMAT = 'yyyy-MM-dd';
@@ -65,15 +73,29 @@ export function calculateSalary(
   paydayDate: Date | null = null,
   periodStartDate?: Date,
   hasReceivedSalary = false,
+  unmarkedDates: readonly string[] = [],
 ) {
   const period = getSalaryPeriod(currentTime, paydayDate, periodStartDate);
   const secondsToday =
     currentTime.getHours() * SECONDS_PER_HOUR +
     currentTime.getMinutes() * SECONDS_PER_MINUTE +
     currentTime.getSeconds();
-  const elapsedDays = differenceInCalendarDays(currentTime, period.periodStart) + secondsToday / SECONDS_PER_DAY;
+  const todayFraction = secondsToday / SECONDS_PER_DAY;
+  const elapsedDays = differenceInCalendarDays(currentTime, period.periodStart) + todayFraction;
   const isPeriodComplete = hasReceivedSalary || differenceInCalendarDays(currentTime, period.payday) > 0;
   const periodFraction = isPeriodComplete ? 1 : Math.max(0, Math.min(elapsedDays / period.daysInPeriod, 1));
+  const unpaidDates = [...new Set(unmarkedDates)]
+    .map(parseSalaryDate)
+    .filter((date): date is Date => date !== null && date >= period.periodStart && date <= period.payday);
+  const unpaidDaysCount = unpaidDates.length;
+  const paidDaysCount = period.daysInPeriod - unpaidDaysCount;
+  const netSalary = monthlySalary * (paidDaysCount / period.daysInPeriod);
+  const unpaidElapsedDays = unpaidDates.reduce(
+    (total, date) => total + Math.max(0, Math.min(differenceInCalendarDays(currentTime, date) + todayFraction, 1)),
+    0,
+  );
+  const paidElapsedDays = Math.max(0, Math.min(elapsedDays, period.daysInPeriod) - unpaidElapsedDays);
+  const isTodayUnpaid = unpaidDates.some((date) => isSameDay(date, currentTime));
   const perDay = monthlySalary / period.daysInPeriod;
   const perHour = perDay / HOURS_PER_DAY;
   const perMinute = perHour / MINUTES_PER_HOUR;
@@ -85,8 +107,14 @@ export function calculateSalary(
     periodProgress: periodFraction * 100,
     isPeriodComplete,
     hasReceivedSalary,
-    earnedInPeriod: monthlySalary * periodFraction,
-    earnedToday: isPeriodComplete ? 0 : perSecond * secondsToday,
+    paidDaysCount,
+    unpaidDaysCount,
+    netSalary,
+    salaryDeduction: monthlySalary - netSalary,
+    earnedInPeriod: isPeriodComplete
+      ? netSalary
+      : Math.min(netSalary, monthlySalary * (paidElapsedDays / period.daysInPeriod)),
+    earnedToday: isPeriodComplete || isTodayUnpaid || elapsedDays < 0 ? 0 : perSecond * secondsToday,
     perDay,
     perHour,
     perMinute,

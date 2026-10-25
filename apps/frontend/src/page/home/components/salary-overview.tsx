@@ -46,10 +46,10 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
             <p className="text-sm leading-relaxed text-muted-foreground">
               {hasSalary
                 ? calculation.hasReceivedSalary
-                  ? 'Bạn đã xác nhận nhận đủ lương. Kỳ tính đã kết thúc.'
+                  ? 'Bạn đã nhận lương sau khấu trừ. Kỳ tính đã kết thúc.'
                   : calculation.isPeriodComplete
-                    ? 'Đã tích lũy đủ lương của kỳ này. Chọn ngày nhận lương mới để tính kỳ tiếp theo.'
-                    : 'Tính từ ngày 01 đến hết ngày nhận lương bạn đã chọn.'
+                    ? 'Kỳ tính đã hoàn tất với số tiền thực nhận sau khấu trừ.'
+                    : 'Tích lũy theo các ngày có tính lương đã trôi qua trong kỳ.'
                 : 'Nhập và lưu mức lương để thấy thời gian của bạn thành tiền.'}
             </p>
           </div>
@@ -73,8 +73,22 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
             </dd>
           </div>
           <div className="space-y-2 border-t p-5 sm:border-t-0 sm:border-l sm:px-7">
-            <dt className="text-xs text-muted-foreground">Tổng lương của kỳ này</dt>
+            <dt className="text-xs text-muted-foreground">
+              {calculation.hasReceivedSalary ? 'Lương thực nhận' : 'Lương dự kiến thực nhận'}
+            </dt>
+            <dd className="break-words text-xl font-medium tabular-nums">{displayAmount(calculation.netSalary)}</dd>
+          </div>
+          <div className="space-y-2 border-t p-5 sm:px-7">
+            <dt className="text-xs text-muted-foreground">Lương ban đầu</dt>
             <dd className="break-words text-xl font-medium tabular-nums">{displayAmount(monthlySalary ?? 0)}</dd>
+          </div>
+          <div className="space-y-2 border-t p-5 sm:border-l sm:px-7">
+            <dt className="text-xs text-muted-foreground">
+              Khấu trừ · {calculation.unpaidDaysCount} ngày không tính lương
+            </dt>
+            <dd className="break-words text-xl font-medium tabular-nums">
+              {displayAmount(calculation.salaryDeduction > 0 ? -calculation.salaryDeduction : 0)}
+            </dd>
           </div>
         </dl>
       </Card>
@@ -108,7 +122,11 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
         </div>
       </section>
 
-      <MonthlyAttendance month={calculation.periodStart} />
+      <MonthlyAttendance
+        key={`${calculation.periodStart.getTime()}-${calculation.payday.getTime()}`}
+        periodStart={calculation.periodStart}
+        payday={calculation.payday}
+      />
 
       <Card className="py-5">
         <CardContent className="flex flex-wrap items-center justify-between gap-4">
@@ -143,10 +161,12 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
         <CalculatorIcon />
         <AlertTitle>Cách tính</AlertTitle>
         <AlertDescription>
-          lương ÷ {calculation.daysInPeriod} ngày ÷ 24 giờ ÷ 60 phút ÷ 60 giây. Kỳ tính từ{' '}
+          Đơn giá cơ bản: lương ban đầu ÷ {calculation.daysInPeriod} ngày ÷ 24 giờ ÷ 60 phút ÷ 60 giây. Kỳ tính từ{' '}
           {format(calculation.periodStart, 'dd/MM/yyyy')} đến hết {format(calculation.payday, 'dd/MM/yyyy')}, gồm cả
-          cuối tuần và ngày nghỉ. <br /> Sau kỳ này, tích lũy giữ ở mức đủ lương, thu nhập phát sinh trong ngày bằng 0.
-          Chọn ngày nhận lương mới để bắt đầu kỳ tiếp theo từ ngày 01 của tháng hiện tại. Số tiền tích lũy là ước tính.
+          cuối tuần và ngày nghỉ. Mỗi ngày chọn “Không tính lương” bị trừ một đơn giá ngày; ngày ngoài kỳ không ảnh
+          hưởng đến lương. <br /> Tiền tích lũy chỉ ghi nhận các ngày có tính lương đã trôi qua. Khi kỳ kết thúc hoặc
+          xác nhận đã nhận lương, tích lũy bằng lương thực nhận sau khấu trừ và thu nhập trong ngày bằng 0. Chọn ngày
+          nhận lương mới để bắt đầu kỳ tiếp theo từ ngày 01 của tháng hiện tại. Số tiền tích lũy là ước tính.
         </AlertDescription>
       </Alert>
     </div>

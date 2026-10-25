@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { useCurrentTime } from '@/hooks/use-current-time';
 import { calculateSalary, parseSalaryDate } from '@/lib/salary';
 import { useSalaryStore } from '@/stores/salary-store';
+import { useAttendanceStore } from '@/stores/attendance-store';
 import { SalaryForm } from './components/salary-form';
 import { SalaryOverview } from './components/salary-overview';
 
@@ -11,12 +12,14 @@ const HomePage = () => {
   const paydayDate = useSalaryStore((state) => state.paydayDate);
   const periodStartDate = useSalaryStore((state) => state.periodStartDate);
   const hasReceivedSalary = useSalaryStore((state) => state.hasReceivedSalary);
+  const unmarkedDates = useAttendanceStore((state) => state.unmarkedDates);
   const calculation = calculateSalary(
     monthlySalary ?? 0,
     currentTime,
     parseSalaryDate(paydayDate),
     parseSalaryDate(periodStartDate) ?? undefined,
     hasReceivedSalary,
+    unmarkedDates,
   );
 
   return (
