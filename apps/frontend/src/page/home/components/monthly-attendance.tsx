@@ -1,10 +1,20 @@
 import { useState } from 'react';
-import { addMonths, differenceInCalendarMonths, format, getDaysInMonth, setDate } from 'date-fns';
+import { addMonths, differenceInCalendarMonths, format, getDaysInMonth, getISODay, setDate } from 'date-fns';
 import { Check, ChevronLeft, ChevronRight, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { SALARY_DATE_FORMAT } from '@/lib/salary';
 import { useAttendanceStore } from '@/stores/attendance-store';
+
+const WEEKDAYS = [
+  { label: 'Thứ Hai', shortLabel: 'T2' },
+  { label: 'Thứ Ba', shortLabel: 'T3' },
+  { label: 'Thứ Tư', shortLabel: 'T4' },
+  { label: 'Thứ Năm', shortLabel: 'T5' },
+  { label: 'Thứ Sáu', shortLabel: 'T6' },
+  { label: 'Thứ Bảy', shortLabel: 'T7' },
+  { label: 'Chủ Nhật', shortLabel: 'CN' },
+];
 
 export function MonthlyAttendance({ periodStart, payday }: { periodStart: Date; payday: Date }) {
   const [monthOffset, setMonthOffset] = useState(0);
@@ -62,12 +72,19 @@ export function MonthlyAttendance({ periodStart, payday }: { periodStart: Date; 
           </p>
         </div>
         <div className="grid grid-cols-7 gap-2">
+          {WEEKDAYS.map(({ label, shortLabel }) => (
+            <span key={shortLabel} className="py-1 text-center text-xs font-medium text-muted-foreground">
+              <span className="sm:hidden">{shortLabel}</span>
+              <span className="hidden sm:inline">{label}</span>
+            </span>
+          ))}
           {days.map(({ date, dateKey, isMarked, isInPeriod }) => (
             <Button
               key={dateKey}
               type="button"
               variant={!isInPeriod ? 'ghost' : isMarked ? 'secondary' : 'outline'}
               className="h-14 min-w-0 flex-col gap-1 px-1"
+              style={date.getDate() === 1 ? { gridColumnStart: getISODay(date) } : undefined}
               aria-label={`${format(date, 'dd/MM/yyyy')}: ${!isInPeriod ? 'Ngoài kỳ tính lương' : isMarked ? 'Có tính lương' : 'Không tính lương'}`}
               aria-pressed={isInPeriod && isMarked}
               disabled={!isInPeriod}
