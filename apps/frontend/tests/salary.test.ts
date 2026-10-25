@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { calculateSalary } from '../src/lib/salary';
+import { calculateSalary, calculateSalaryProgress, prepareSalaryCalculation } from '../src/lib/salary';
 
 const MONTHLY_SALARY = 10_000_000;
 const OCTOBER_PERIOD_START = new Date(2026, 9, 1);
@@ -22,6 +22,41 @@ function calculateOctoberSalary(
 }
 
 describe('salary deductions from attendance', () => {
+  test('reuses prepared rates and attendance while earnings advance every second', () => {
+    const preparedSalary = prepareSalaryCalculation(
+      MONTHLY_SALARY,
+      OCTOBER_CURRENT_TIME,
+      OCTOBER_PAYDAY,
+      OCTOBER_PERIOD_START,
+      ['2026-10-10'],
+    );
+    const initial = calculateSalaryProgress(preparedSalary, OCTOBER_CURRENT_TIME);
+    const nextSecond = calculateSalaryProgress(preparedSalary, new Date(2026, 9, 24, 12, 0, 1));
+
+    expect(nextSecond.earnedInPeriod - initial.earnedInPeriod).toBeCloseTo(initial.perSecond);
+    expect(nextSecond.unpaidDates).toBe(preparedSalary.unpaidDates);
+    expect(nextSecond.perSecond).toBe(initial.perSecond);
+    expect(nextSecond.netSalary).toBe(initial.netSalary);
+  });
+
+  test('reuses attendance correctly when an unpaid day becomes a past day at midnight', () => {
+    const preparedSalary = prepareSalaryCalculation(
+      MONTHLY_SALARY,
+      OCTOBER_CURRENT_TIME,
+      OCTOBER_PAYDAY,
+      OCTOBER_PERIOD_START,
+      ['2026-10-24'],
+    );
+    const unpaidDay = calculateSalaryProgress(preparedSalary, new Date(2026, 9, 24, 23, 59, 59));
+    const nextDay = calculateSalaryProgress(preparedSalary, new Date(2026, 9, 25));
+    const paidDay = calculateSalaryProgress(preparedSalary, new Date(2026, 9, 25, 12));
+
+    expect(nextDay.earnedInPeriod).toBe(unpaidDay.earnedInPeriod);
+    expect(nextDay.earnedToday).toBe(0);
+    expect(paidDay.earnedInPeriod).toBe(9_400_000);
+    expect(paidDay.earnedToday).toBe(200_000);
+  });
+
   test('calculates a 60-day period with a custom start, including unpaid days across all months', () => {
     const salary = calculateSalary(
       60_000_000,

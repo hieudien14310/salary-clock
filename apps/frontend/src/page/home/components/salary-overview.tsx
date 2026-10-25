@@ -1,88 +1,55 @@
-import { format } from 'date-fns';
+import { useMemo } from 'react';
+import { differenceInCalendarDays, format } from 'date-fns';
 import { CalculatorIcon, CalendarCheck, CalendarDays, Clock3, Hourglass, Timer } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { formatCurrency, type SalaryCalculation } from '@/lib/salary';
+import { formatCurrency, parseSalaryDate, prepareSalaryCalculation } from '@/lib/salary';
+import { useCurrentDay } from '@/hooks/use-current-time';
+import { useAttendanceStore } from '@/stores/attendance-store';
 import { useSalaryStore } from '@/stores/salary-store';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { MonthlyAttendance } from './monthly-attendance';
+import { SalaryLiveSummary } from './salary-live-summary';
 
 const RATE_UNITS = [
-  { key: 'perSecond', label: 'Mỗi giây', detail: '1 giây', icon: Timer },
-  { key: 'perMinute', label: 'Mỗi phút', detail: '60 giây', icon: Hourglass },
-  { key: 'perHour', label: 'Mỗi giờ', detail: '60 phút', icon: Clock3 },
-  { key: 'perDay', label: 'Mỗi ngày', detail: '24 giờ', icon: CalendarDays },
+  { key: 'perSecond', label: 'Mỗi giây', icon: Timer },
+  { key: 'perMinute', label: 'Mỗi phút', icon: Hourglass },
+  { key: 'perHour', label: 'Mỗi giờ', icon: Clock3 },
+  { key: 'perDay', label: 'Mỗi ngày', icon: CalendarDays },
 ] as const;
 
-type SalaryOverviewProps = {
-  monthlySalary: number | null;
-  calculation: SalaryCalculation;
-};
-
-export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewProps) {
+export function SalaryOverview() {
+  const currentDay = useCurrentDay();
+  const monthlySalary = useSalaryStore((state) => state.monthlySalary);
+  const paydayDate = useSalaryStore((state) => state.paydayDate);
+  const periodStartDate = useSalaryStore((state) => state.periodStartDate);
+  const hasReceivedSalary = useSalaryStore((state) => state.hasReceivedSalary);
   const markSalaryReceived = useSalaryStore((state) => state.markSalaryReceived);
+  const unmarkedDates = useAttendanceStore((state) => state.unmarkedDates);
+  const salary = useMemo(
+    () =>
+      prepareSalaryCalculation(
+        monthlySalary ?? 0,
+        currentDay,
+        parseSalaryDate(paydayDate),
+        parseSalaryDate(periodStartDate) ?? undefined,
+        unmarkedDates,
+      ),
+    [monthlySalary, currentDay, paydayDate, periodStartDate, unmarkedDates],
+  );
   const hasSalary = monthlySalary !== null;
+  const daysUntilPayday = differenceInCalendarDays(salary.payday, currentDay);
+  const isPeriodComplete = hasReceivedSalary || daysUntilPayday < 0;
   const displayAmount = (amount: number, showDecimals = false) =>
     hasSalary ? formatCurrency(amount, showDecimals) : '—';
-  const paydayLabel = format(calculation.payday, 'dd/MM/yyyy');
-  const progressLabel = calculation.periodProgress.toLocaleString('vi-VN', { maximumFractionDigits: 1 });
+  const paydayLabel = format(salary.payday, 'dd/MM/yyyy');
 
   return (
     <div className="min-w-0 space-y-3">
-      <Card className="gap-0 py-0">
-        <CardContent className="space-y-3 p-5 sm:p-7">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-sm font-medium text-muted-foreground">Tích lũy ước tính trong kỳ</h2>
-          </div>
-          <div className="space-y-3">
-            <p
-              className="break-words text-4xl leading-tight font-semibold tracking-tight tabular-nums sm:text-5xl lg:text-6xl"
-              aria-live="off"
-            >
-              {displayAmount(calculation.earnedInPeriod)}
-              {' / '}
-              {displayAmount(monthlySalary ?? 0)}
-            </p>
-          </div>
-          <div className="space-y-3">
-            <div className="flex justify-between gap-3 text-xs text-muted-foreground">
-              <span>Tiến trình kỳ lương</span>
-              <span className="tabular-nums">{progressLabel}%</span>
-            </div>
-            <Progress value={calculation.periodProgress} aria-label="Tiến trình kỳ lương" />
-            <div className="flex justify-between gap-3 text-xs text-muted-foreground">
-              <span>{format(calculation.periodStart, 'dd/MM/yyyy')}</span>
-              <span>{format(calculation.payday, 'dd/MM/yyyy')}</span>
-            </div>
-          </div>
-        </CardContent>
-        <dl className="grid grid-cols-1 border-t bg-muted/30 sm:grid-cols-3">
-          <div className="space-y-2 p-5 sm:px-7">
-            <dt className="text-xs text-muted-foreground">Tích lũy của hôm nay</dt>
-            <dd className="break-words text-xl font-medium tabular-nums" aria-live="off">
-              {displayAmount(calculation.earnedToday)}
-            </dd>
-          </div>
-          <div className="space-y-2 border-t p-5 sm:border-t-0 sm:border-l sm:px-7">
-            <dt className="text-xs text-muted-foreground">
-              {calculation.hasReceivedSalary ? 'Lương thực nhận' : 'Lương dự kiến thực nhận'}
-            </dt>
-            <dd className="break-words text-xl font-medium tabular-nums">{displayAmount(calculation.netSalary)}</dd>
-          </div>
-          <div className="space-y-2 border-t p-5 sm:border-t-0 sm:border-l sm:px-7">
-            <dt className="text-xs text-muted-foreground">
-              Khấu trừ · {calculation.unpaidDaysCount} ngày không tính lương
-            </dt>
-            <dd className="break-words text-xl font-medium tabular-nums">
-              {displayAmount(calculation.salaryDeduction > 0 ? -calculation.salaryDeduction : 0)}
-            </dd>
-          </div>
-        </dl>
-      </Card>
+      <SalaryLiveSummary salary={salary} currentDay={currentDay} hasReceivedSalary={hasReceivedSalary} />
 
-      <section aria-labelledby="salary-rates-heading" className="space-y-3">
+      <section aria-label="Thu nhập theo thời gian" className="space-y-3">
         <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 xl:grid-cols-4">
           {RATE_UNITS.map(({ key, label, icon: Icon }) => (
             <Card key={key} className="min-w-0 gap-0 py-4">
@@ -94,7 +61,7 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
                   </dt>
                   <dd className="space-y-1">
                     <p className="break-words text-lg font-semibold tracking-tight tabular-nums">
-                      {displayAmount(calculation[key], true)}
+                      {displayAmount(salary[key], true)}
                     </p>
                   </dd>
                 </dl>
@@ -105,11 +72,11 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
       </section>
 
       <MonthlyAttendance
-        key={`${calculation.periodStart.getTime()}-${calculation.payday.getTime()}`}
-        periodStart={calculation.periodStart}
-        payday={calculation.payday}
-        daysInPeriod={calculation.daysInPeriod}
-        paidDaysCount={calculation.paidDaysCount}
+        key={`${salary.periodStart.getTime()}-${salary.payday.getTime()}`}
+        periodStart={salary.periodStart}
+        payday={salary.payday}
+        daysInPeriod={salary.daysInPeriod}
+        paidDaysCount={salary.paidDaysCount}
       />
 
       <Card className="py-5">
@@ -125,15 +92,15 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
           </div>
           <div className="flex flex-wrap items-center gap-2" role="status">
             <Badge variant="secondary" className="h-auto px-3 py-1.5">
-              {calculation.hasReceivedSalary
+              {hasReceivedSalary
                 ? 'Đã nhận lương'
-                : calculation.daysUntilPayday < 0
+                : daysUntilPayday < 0
                   ? 'Đã qua ngày nhận lương'
-                  : calculation.daysUntilPayday === 0
+                  : daysUntilPayday === 0
                     ? 'Hôm nay là ngày nhận lương'
-                    : `Còn ${calculation.daysUntilPayday} ngày`}
+                    : `Còn ${daysUntilPayday} ngày`}
             </Badge>
-            {hasSalary && calculation.daysUntilPayday === 0 && !calculation.isPeriodComplete && (
+            {hasSalary && daysUntilPayday === 0 && !isPeriodComplete && (
               <Button type="button" onClick={markSalaryReceived}>
                 Đã nhận lương
               </Button>
@@ -145,12 +112,12 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
         <CalculatorIcon />
         <AlertTitle>Cách tính</AlertTitle>
         <AlertDescription>
-          Đơn giá cơ bản: lương ban đầu ÷ {calculation.daysInPeriod} ngày ÷ 24 giờ ÷ 60 phút ÷ 60 giây. Kỳ tính từ{' '}
-          {format(calculation.periodStart, 'dd/MM/yyyy')} đến hết {format(calculation.payday, 'dd/MM/yyyy')}, gồm cả
-          cuối tuần và ngày nghỉ. Mỗi ngày chọn “Không tính lương” bị trừ một đơn giá ngày; ngày ngoài kỳ không ảnh
-          hưởng đến lương. <br /> Tiền tích lũy chỉ ghi nhận các ngày có tính lương đã trôi qua. Khi kỳ kết thúc hoặc
-          xác nhận đã nhận lương, tích lũy bằng lương thực nhận sau khấu trừ và thu nhập trong ngày bằng 0. Chọn ngày
-          bắt đầu và ngày nhận lương mới để tính kỳ tiếp theo. Số tiền tích lũy là ước tính.
+          Đơn giá cơ bản: lương ban đầu ÷ {salary.daysInPeriod} ngày ÷ 24 giờ ÷ 60 phút ÷ 60 giây. Kỳ tính từ{' '}
+          {format(salary.periodStart, 'dd/MM/yyyy')} đến hết {format(salary.payday, 'dd/MM/yyyy')}, gồm cả cuối tuần và
+          ngày nghỉ. Mỗi ngày chọn “Không tính lương” bị trừ một đơn giá ngày; ngày ngoài kỳ không ảnh hưởng đến lương.{' '}
+          <br /> Tiền tích lũy chỉ ghi nhận các ngày có tính lương đã trôi qua. Khi kỳ kết thúc hoặc xác nhận đã nhận
+          lương, tích lũy bằng lương thực nhận sau khấu trừ và thu nhập trong ngày bằng 0. Chọn ngày bắt đầu và ngày
+          nhận lương mới để tính kỳ tiếp theo. Số tiền tích lũy là ước tính.
         </AlertDescription>
       </Alert>
     </div>

@@ -1,26 +1,7 @@
-import { useCurrentTime } from '@/hooks/use-current-time';
-import { calculateSalary, parseSalaryDate } from '@/lib/salary';
-import { useAttendanceStore } from '@/stores/attendance-store';
-import { useSalaryStore } from '@/stores/salary-store';
 import { SalaryForm } from './components/salary-form';
 import { SalaryOverview } from './components/salary-overview';
 
 const HomePage = () => {
-  const currentTime = useCurrentTime();
-  const monthlySalary = useSalaryStore((state) => state.monthlySalary);
-  const paydayDate = useSalaryStore((state) => state.paydayDate);
-  const periodStartDate = useSalaryStore((state) => state.periodStartDate);
-  const hasReceivedSalary = useSalaryStore((state) => state.hasReceivedSalary);
-  const unmarkedDates = useAttendanceStore((state) => state.unmarkedDates);
-  const calculation = calculateSalary(
-    monthlySalary ?? 0,
-    currentTime,
-    parseSalaryDate(paydayDate),
-    parseSalaryDate(periodStartDate) ?? undefined,
-    hasReceivedSalary,
-    unmarkedDates,
-  );
-
   return (
     <main className="flex-1 p-3">
       <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
@@ -35,8 +16,8 @@ const HomePage = () => {
       </div>
 
       <div className="grid items-start gap-3 lg:grid-cols-[320px_minmax(0,1fr)] xl:grid-cols-[340px_minmax(0,1fr)]">
-        <SalaryForm currentTime={currentTime} />
-        <SalaryOverview monthlySalary={monthlySalary} calculation={calculation} />
+        <SalaryForm />
+        <SalaryOverview />
       </div>
     </main>
   );

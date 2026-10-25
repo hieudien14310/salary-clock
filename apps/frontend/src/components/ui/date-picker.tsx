@@ -6,8 +6,10 @@ import { vi } from 'date-fns/locale';
 import { ChevronDownIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Spinner } from '@/components/ui/spinner';
+
+const Calendar = React.lazy(() => import('@/components/ui/calendar').then((module) => ({ default: module.Calendar })));
 
 type DatePickerProps = Pick<
   React.ComponentProps<typeof Button>,
@@ -38,17 +40,25 @@ export function DatePicker({ value, onChange, placeholder = 'Chọn ngày', ...p
         }
       />
       <PopoverContent className="p-0" align="start">
-        <Calendar
-          className="w-full"
-          mode="single"
-          locale={vi}
-          selected={value}
-          defaultMonth={value}
-          onSelect={(date) => {
-            onChange(date);
-            if (date) setOpen(false);
-          }}
-        />
+        <React.Suspense
+          fallback={
+            <div className="flex h-72 items-center justify-center">
+              <Spinner aria-label="Đang tải lịch" />
+            </div>
+          }
+        >
+          <Calendar
+            className="w-full"
+            mode="single"
+            locale={vi}
+            selected={value}
+            defaultMonth={value}
+            onSelect={(date) => {
+              onChange(date);
+              if (date) setOpen(false);
+            }}
+          />
+        </React.Suspense>
       </PopoverContent>
     </Popover>
   );

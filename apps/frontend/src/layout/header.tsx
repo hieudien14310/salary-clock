@@ -5,9 +5,8 @@ import { useTheme } from '@/components/theme-provider';
 import PATH from '@/constants/path';
 
 const Header = () => {
-  const { theme, setTheme } = useTheme();
-  const isDarkMode =
-    theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  const { resolvedTheme, setTheme } = useTheme();
+  const isDarkMode = resolvedTheme === 'dark';
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-sm">

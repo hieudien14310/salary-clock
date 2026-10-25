@@ -1,18 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { getClockTimestamp, subscribeToClock, type ClockPrecision } from '@/lib/clock';
 
-export function useCurrentTime() {
-  const [currentTime, setCurrentTime] = useState(() => new Date());
+function useClock(precision: ClockPrecision, enabled = true) {
+  const [timestamp, setTimestamp] = useState(() => getClockTimestamp(precision));
 
   useEffect(() => {
-    const updateTime = () => setCurrentTime(new Date());
-    const intervalId = window.setInterval(updateTime, 1_000);
-    document.addEventListener('visibilitychange', updateTime);
+    if (enabled) return subscribeToClock(precision, setTimestamp);
+  }, [precision, enabled]);
 
-    return () => {
-      window.clearInterval(intervalId);
-      document.removeEventListener('visibilitychange', updateTime);
-    };
-  }, []);
+  return useMemo(() => new Date(timestamp), [timestamp]);
+}
 
-  return currentTime;
+export function useCurrentTime(enabled = true) {
+  return useClock('second', enabled);
+}
+
+export function useCurrentDay() {
+  return useClock('day');
 }

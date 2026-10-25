@@ -22,17 +22,24 @@ const PERIOD_DATE_FIELDS = [
   { name: 'paydayDate', id: 'payday-date', label: 'Ngày nhận lương', placeholder: 'Chọn ngày nhận lương' },
 ] as const;
 
-export function SalaryForm({ currentTime }: { currentTime: Date }) {
+export function SalaryForm() {
   const monthlySalary = useSalaryStore((state) => state.monthlySalary);
   const paydayDate = useSalaryStore((state) => state.paydayDate);
   const periodStartDate = useSalaryStore((state) => state.periodStartDate);
   const setMonthlySalary = useSalaryStore((state) => state.setMonthlySalary);
   const setSalarySettings = useSalaryStore((state) => state.setSalarySettings);
-  const savedPeriod = getSalaryPeriod(
-    currentTime,
-    parseSalaryDate(paydayDate),
-    parseSalaryDate(periodStartDate) ?? undefined,
-  );
+  const [defaultValues] = useState<SalaryFormInput>(() => {
+    const savedPeriod = getSalaryPeriod(
+      new Date(),
+      parseSalaryDate(paydayDate),
+      parseSalaryDate(periodStartDate) ?? undefined,
+    );
+    return {
+      monthlySalary: monthlySalary === null ? '' : formatSalaryInput(monthlySalary),
+      periodStartDate: savedPeriod.periodStart,
+      paydayDate: savedPeriod.payday,
+    };
+  });
   const [statusMessage, setStatusMessage] = useState('');
   const {
     control,
@@ -43,11 +50,7 @@ export function SalaryForm({ currentTime }: { currentTime: Date }) {
     trigger,
     formState: { errors, isDirty, isSubmitted },
   } = useForm<SalaryFormInput, unknown, SalaryFormValues>({
-    defaultValues: {
-      monthlySalary: monthlySalary === null ? '' : formatSalaryInput(monthlySalary),
-      periodStartDate: savedPeriod.periodStart,
-      paydayDate: savedPeriod.payday,
-    },
+    defaultValues,
     resolver: (values): ResolverResult<SalaryFormInput, SalaryFormValues> => {
       const result = salaryFormSchema.safeParse(values);
       if (result.success) return { values: result.data, errors: {} };
@@ -69,7 +72,7 @@ export function SalaryForm({ currentTime }: { currentTime: Date }) {
   const [draftPeriodStart, draftPayday] = useWatch({ control, name: ['periodStartDate', 'paydayDate'] });
   const previewPeriod =
     isValid(draftPeriodStart) && isValid(draftPayday) && startOfDay(draftPayday) >= startOfDay(draftPeriodStart)
-      ? getSalaryPeriod(currentTime, draftPayday, draftPeriodStart)
+      ? getSalaryPeriod(draftPeriodStart, draftPayday, draftPeriodStart)
       : null;
 
   function saveSalary(values: SalaryFormValues) {

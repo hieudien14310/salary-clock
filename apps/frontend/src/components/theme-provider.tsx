@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 
-type Theme = "dark" | "light" | "system";
+type Theme = 'dark' | 'light' | 'system';
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -10,58 +10,69 @@ type ThemeProviderProps = {
 
 type ThemeProviderState = {
   theme: Theme;
+  resolvedTheme: 'dark' | 'light';
   setTheme: (theme: Theme) => void;
 };
 
-const initialState: ThemeProviderState = {
-  theme: "system",
-  setTheme: () => null,
-};
+const SYSTEM_THEME_QUERY = '(prefers-color-scheme: dark)';
+const ThemeProviderContext = createContext<ThemeProviderState | undefined>(undefined);
 
-const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
+function subscribeToSystemTheme(onChange: () => void) {
+  const mediaQuery = window.matchMedia(SYSTEM_THEME_QUERY);
+  mediaQuery.addEventListener('change', onChange);
+  return () => mediaQuery.removeEventListener('change', onChange);
+}
+
+const getSystemDarkMode = () => window.matchMedia(SYSTEM_THEME_QUERY).matches;
+
+function readSavedTheme(storageKey: string, defaultTheme: Theme): Theme {
+  try {
+    const savedTheme = localStorage.getItem(storageKey);
+    return savedTheme === 'dark' || savedTheme === 'light' || savedTheme === 'system' ? savedTheme : defaultTheme;
+  } catch {
+    return defaultTheme;
+  }
+}
 
 export function ThemeProvider({
   children,
-  defaultTheme = "system",
-  storageKey = "vite-ui-theme",
-  ...props
+  defaultTheme = 'system',
+  storageKey = 'vite-ui-theme',
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem(storageKey) as Theme) || defaultTheme);
+  const [theme, setThemeState] = useState(() => readSavedTheme(storageKey, defaultTheme));
+  const isSystemDarkMode = useSyncExternalStore(subscribeToSystemTheme, getSystemDarkMode);
+  const resolvedTheme = theme === 'system' ? (isSystemDarkMode ? 'dark' : 'light') : theme;
 
   useEffect(() => {
-    const root = window.document.documentElement;
+    const root = document.documentElement;
+    root.classList.remove('light', 'dark');
+    root.classList.add(resolvedTheme);
+  }, [resolvedTheme]);
 
-    root.classList.remove("light", "dark");
-
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-
-      root.classList.add(systemTheme);
-      return;
-    }
-
-    root.classList.add(theme);
-  }, [theme]);
-
-  const value = {
-    theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
+  const setTheme = useCallback(
+    (nextTheme: Theme) => {
+      setThemeState(nextTheme);
+      try {
+        localStorage.setItem(storageKey, nextTheme);
+      } catch {
+        // Giao diện vẫn đổi khi trình duyệt không cho lưu localStorage.
+      }
     },
-  };
+    [storageKey],
+  );
+  const value = useMemo(() => ({ theme, resolvedTheme, setTheme }), [theme, resolvedTheme, setTheme]);
 
   return (
-    <ThemeProviderContext.Provider {...props} value={value}>
+    <ThemeProviderContext.Provider value={value}>
       {children}
     </ThemeProviderContext.Provider>
   );
 }
 
-export const useTheme = () => {
+export function useTheme() {
   const context = useContext(ThemeProviderContext);
 
-  if (context === undefined) throw new Error("useTheme must be used within a ThemeProvider");
+  if (context === undefined) throw new Error('useTheme must be used within a ThemeProvider');
 
   return context;
-};
+}
