@@ -66,7 +66,7 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
         </CardContent>
         <dl className="grid grid-cols-1 border-t bg-muted/30 sm:grid-cols-2">
           <div className="space-y-2 p-5 sm:px-7">
-            <dt className="text-xs text-muted-foreground">Tích lũy từ 00:00 hôm nay</dt>
+            <dt className="text-xs text-muted-foreground">Tích lũy của hôm nay</dt>
             <dd className="break-words text-xl font-medium tabular-nums" aria-live="off">
               {displayAmount(calculation.earnedToday)}
             </dd>
