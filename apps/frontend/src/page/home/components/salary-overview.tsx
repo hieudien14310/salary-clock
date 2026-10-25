@@ -30,9 +30,9 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
   const progressLabel = calculation.periodProgress.toLocaleString('vi-VN', { maximumFractionDigits: 1 });
 
   return (
-    <div className="min-w-0 space-y-6">
+    <div className="min-w-0 space-y-3">
       <Card className="gap-0 py-0">
-        <CardContent className="space-y-7 p-5 sm:p-7">
+        <CardContent className="space-y-3 p-5 sm:p-7">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-sm font-medium text-muted-foreground">Tích lũy ước tính trong kỳ</h2>
           </div>
@@ -44,15 +44,6 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
               {displayAmount(calculation.earnedInPeriod)}
               {' / '}
               {displayAmount(monthlySalary ?? 0)}
-            </p>
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              {hasSalary
-                ? calculation.hasReceivedSalary
-                  ? 'Bạn đã nhận lương sau khấu trừ. Kỳ tính đã kết thúc.'
-                  : calculation.isPeriodComplete
-                    ? 'Kỳ tính đã hoàn tất với số tiền thực nhận sau khấu trừ.'
-                    : 'Tích lũy theo các ngày có tính lương đã trôi qua trong kỳ.'
-                : 'Nhập và lưu mức lương để thấy thời gian của bạn thành tiền.'}
             </p>
           </div>
           <div className="space-y-3">
@@ -92,14 +83,8 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
       </Card>
 
       <section aria-labelledby="salary-rates-heading" className="space-y-3">
-        {/* <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 id="salary-rates-heading" className="text-sm font-medium">
-            Thời gian của bạn đáng giá bao nhiêu?
-          </h2>
-          <span className="text-xs text-muted-foreground">VND / đơn vị thời gian</span>
-        </div> */}
         <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 xl:grid-cols-4">
-          {RATE_UNITS.map(({ key, label, detail, icon: Icon }) => (
+          {RATE_UNITS.map(({ key, label, icon: Icon }) => (
             <Card key={key} className="min-w-0 gap-0 py-4">
               <CardContent>
                 <dl className="space-y-4">
@@ -111,7 +96,6 @@ export function SalaryOverview({ monthlySalary, calculation }: SalaryOverviewPro
                     <p className="break-words text-lg font-semibold tracking-tight tabular-nums">
                       {displayAmount(calculation[key], true)}
                     </p>
-                    <p className="text-xs text-muted-foreground">/ {detail}</p>
                   </dd>
                 </dl>
               </CardContent>
