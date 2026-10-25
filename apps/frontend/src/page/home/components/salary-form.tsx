@@ -225,7 +225,7 @@ export function SalaryForm() {
         <div className="space-y-3 border-t pt-5">
           <p className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
             <HardDrive className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-            Mức lương và kỳ tính được lưu trong trình duyệt này cho lần truy cập tiếp theo.
+            Mọi dữ liệu đều được lưu tại máy tính của bạn.
           </p>
           {monthlySalary !== null && (
             <Button
