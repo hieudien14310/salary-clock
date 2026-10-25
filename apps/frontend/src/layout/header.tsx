@@ -10,7 +10,7 @@ const Header = () => {
     theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   return (
-    <header className="border-b">
+    <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-sm">
       <div className="flex items-center justify-between gap-4 p-3">
         <Link
           to={PATH.HOME}
