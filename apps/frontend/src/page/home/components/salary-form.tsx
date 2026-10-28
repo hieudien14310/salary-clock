@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { format, isValid, startOfDay } from 'date-fns';
 import { Controller, useForm, useWatch, type ResolverResult } from 'react-hook-form';
-import { ArrowRight, CalendarDays, Check, HardDrive, Wallet } from 'lucide-react';
+import { ArrowRight, CalendarDays, Check, CircleIcon, HardDrive, RefreshCwIcon, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import { DatePicker } from '@/components/ui/date-picker';
@@ -219,23 +219,16 @@ export function SalaryForm() {
             {monthlySalary === null ? 'Bắt đầu quy đổi' : isDirty ? 'Lưu thay đổi' : 'Đã lưu thông tin'}
             {monthlySalary !== null && !isDirty ? <Check aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}
           </Button>
+          <Button type="button" variant="destructive" className="h-10 w-full" onClick={clearSalary}>
+            <RefreshCwIcon />
+            Xóa mức lương đã lưu
+          </Button>
         </form>
         <div className="space-y-3 border-t pt-5">
           <p className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
             <HardDrive className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
             Mọi dữ liệu đều được lưu tại máy tính của bạn.
           </p>
-          {monthlySalary !== null && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="-ml-2.5 text-muted-foreground"
-              onClick={clearSalary}
-            >
-              Xóa mức lương đã lưu
-            </Button>
-          )}
         </div>
       </CardContent>
     </Card>
