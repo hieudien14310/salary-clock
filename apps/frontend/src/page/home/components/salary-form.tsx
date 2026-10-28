@@ -103,7 +103,7 @@ export function SalaryForm() {
       <CardContent className="space-y-6 px-6">
         <form onSubmit={handleSubmit(saveSalary)} noValidate className="space-y-5">
           <div className="space-y-3">
-            <Label htmlFor="monthly-salary">Tổng lương của kỳ</Label>
+            <Label htmlFor="monthly-salary">Lương của bạn</Label>
             <InputGroup className="h-12">
               <Controller
                 name="monthlySalary"
