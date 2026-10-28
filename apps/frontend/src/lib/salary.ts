@@ -21,7 +21,12 @@ const RATE_FORMATTER = new Intl.NumberFormat('vi-VN', {
   maximumFractionDigits: 2,
 });
 
-export const formatSalaryInput = (amount: number) => INTEGER_FORMATTER.format(amount);
+export function formatSalaryInput(value: number | string) {
+  if (typeof value === 'number') return INTEGER_FORMATTER.format(value);
+
+  const salaryDigits = value.replace(/\D/g, '');
+  return salaryDigits ? INTEGER_FORMATTER.format(BigInt(salaryDigits)) : '';
+}
 
 export const formatCurrency = (amount: number, showDecimals = false) =>
   (showDecimals ? RATE_FORMATTER : CURRENCY_FORMATTER).format(amount);

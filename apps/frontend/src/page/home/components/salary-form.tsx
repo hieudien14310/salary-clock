@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/
 import { DatePicker } from '@/components/ui/date-picker';
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from '@/components/ui/input-group';
 import { Label } from '@/components/ui/label';
-import { formatSalaryInput, getSalaryPeriod, parseSalaryDate, parseSalaryInput } from '@/lib/salary';
+import { formatSalaryInput, getSalaryPeriod, parseSalaryDate } from '@/lib/salary';
 import { salaryFormSchema, type SalaryFormInput, type SalaryFormValues } from '@/schema/salary-form-schema';
 import { useSalaryStore } from '@/stores/salary-store';
 
@@ -116,14 +116,24 @@ export function SalaryForm() {
                     autoComplete="off"
                     placeholder="10.000.000"
                     onChange={(event) => {
-                      field.onChange(event.target.value.replace(/[^0-9.]/g, ''));
+                      const inputElement = event.currentTarget;
+                      const formattedSalary = formatSalaryInput(inputElement.value);
+                      const digitsAfterCaret = inputElement.value
+                        .slice(inputElement.selectionStart ?? inputElement.value.length)
+                        .replace(/\D/g, '').length;
+                      const digitPositions = Array.from(formattedSalary.matchAll(/\d/g), (match) => match.index);
+                      const digitsBeforeCaret = Math.max(0, digitPositions.length - digitsAfterCaret);
+                      let caretPosition = digitPositions[digitsBeforeCaret] ?? formattedSalary.length;
+
+                      if ((event.nativeEvent as InputEvent).inputType === 'deleteContentBackward') {
+                        caretPosition = digitsBeforeCaret > 0 ? digitPositions[digitsBeforeCaret - 1] + 1 : 0;
+                      }
+
+                      field.onChange(formattedSalary);
                       setStatusMessage('');
+                      requestAnimationFrame(() => inputElement.setSelectionRange(caretPosition, caretPosition));
                     }}
-                    onBlur={() => {
-                      const amount = parseSalaryInput(field.value);
-                      if (amount !== null) field.onChange(formatSalaryInput(amount));
-                      field.onBlur();
-                    }}
+                    onBlur={field.onBlur}
                     aria-invalid={Boolean(errors.monthlySalary)}
                     aria-describedby={errors.monthlySalary ? 'salary-error' : 'salary-hint'}
                     className="h-full text-lg font-medium tabular-nums md:text-lg"

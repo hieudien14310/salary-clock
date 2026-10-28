@@ -1,10 +1,33 @@
 import { describe, expect, test } from 'bun:test';
-import { calculateSalary, calculateSalaryProgress, prepareSalaryCalculation } from '../src/lib/salary';
+import {
+  calculateSalary,
+  calculateSalaryProgress,
+  formatSalaryInput,
+  prepareSalaryCalculation,
+} from '../src/lib/salary';
 
 const MONTHLY_SALARY = 10_000_000;
 const OCTOBER_PERIOD_START = new Date(2026, 9, 1);
 const OCTOBER_PAYDAY = new Date(2026, 9, 25);
 const OCTOBER_CURRENT_TIME = new Date(2026, 9, 24, 12);
+
+describe('salary input formatting', () => {
+  test.each([
+    [300, '300'],
+    ['300', '300'],
+    ['3000', '3.000'],
+    ['1000000', '1.000.000'],
+    ['1.000.000', '1.000.000'],
+    ['abc1,000!000 VND', '1.000.000'],
+    ['', ''],
+    ['abc! .', ''],
+    ['0', '0'],
+    ['0003000', '3.000'],
+    ['9007199254740993', '9.007.199.254.740.993'],
+  ])('formats %p as %p', (value, expected) => {
+    expect(formatSalaryInput(value)).toBe(expected);
+  });
+});
 
 function calculateOctoberSalary(
   unmarkedDates: string[] = [],
