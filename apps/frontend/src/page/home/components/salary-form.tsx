@@ -116,7 +116,7 @@ export function SalaryForm() {
                     autoComplete="off"
                     placeholder="10.000.000"
                     onChange={(event) => {
-                      field.onChange(event);
+                      field.onChange(event.target.value.replace(/[^0-9.]/g, ''));
                       setStatusMessage('');
                     }}
                     onBlur={() => {
