@@ -40,7 +40,6 @@ export function SalaryForm() {
       paydayDate: savedPeriod.payday,
     };
   });
-  const [statusMessage, setStatusMessage] = useState('');
   const {
     control,
     handleSubmit,
@@ -82,13 +81,11 @@ export function SalaryForm() {
       periodStartDate: values.periodStart,
       paydayDate: values.paydayDate,
     });
-    setStatusMessage('Đã lưu mức lương và kỳ tính.');
   }
 
   function clearSalary() {
     setMonthlySalary(null);
     reset({ monthlySalary: '', periodStartDate: getValues('periodStartDate'), paydayDate: getValues('paydayDate') });
-    setStatusMessage('Đã xóa mức lương đã lưu.');
   }
 
   return (
@@ -130,7 +127,6 @@ export function SalaryForm() {
                       }
 
                       field.onChange(formattedSalary);
-                      setStatusMessage('');
                       requestAnimationFrame(() => inputElement.setSelectionRange(caretPosition, caretPosition));
                     }}
                     onBlur={field.onBlur}
@@ -164,7 +160,6 @@ export function SalaryForm() {
                       shouldDirty: true,
                       shouldValidate: isSubmitted,
                     });
-                    setStatusMessage('');
                   }}
                 >
                   {amount / 1_000_000} triệu
@@ -187,7 +182,6 @@ export function SalaryForm() {
                     onBlur={field.onBlur}
                     onChange={(date) => {
                       field.onChange(date);
-                      setStatusMessage('');
                       if (isSubmitted) void trigger(['periodStartDate', 'paydayDate']);
                     }}
                     aria-invalid={Boolean(errors[name])}
@@ -225,12 +219,6 @@ export function SalaryForm() {
             {monthlySalary === null ? 'Bắt đầu quy đổi' : isDirty ? 'Lưu thay đổi' : 'Đã lưu thông tin'}
             {monthlySalary !== null && !isDirty ? <Check aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}
           </Button>
-          <div role="status" className="text-xs leading-relaxed text-muted-foreground">
-            {statusMessage ||
-              (isDirty
-                ? 'Lưu thay đổi để cập nhật kết quả bên cạnh.'
-                : 'Bạn có thể thay đổi mức lương và hai ngày của kỳ bất cứ lúc nào.')}
-          </div>
         </form>
         <div className="space-y-3 border-t pt-5">
           <p className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
