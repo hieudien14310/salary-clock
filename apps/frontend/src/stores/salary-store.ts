@@ -1,13 +1,22 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { format, getDaysInMonth, isSameDay, isValid, setDate, startOfDay, startOfMonth } from 'date-fns';
-import { getSalaryPeriod, isValidMonthlySalary, parseSalaryDate, SALARY_DATE_FORMAT } from '@/lib/salary';
+import { format, getDaysInMonth, isValid, setDate, startOfDay, startOfMonth } from 'date-fns';
+import {
+  getSalaryPeriod,
+  isValidMonthlySalary,
+  parseSalaryDate,
+  prepareSalaryCalculation,
+  SALARY_DATE_FORMAT,
+} from '@/lib/salary';
+import { parseSalaryHistory, type SalaryHistoryEntry } from '@/schema/salary-history-schema';
+import { useAttendanceStore } from '@/stores/attendance-store';
 
 type SalaryState = {
   monthlySalary: number | null;
   paydayDate: string | null;
   periodStartDate: string | null;
   hasReceivedSalary: boolean;
+  salaryHistory: SalaryHistoryEntry[];
   setMonthlySalary: (amount: number | null) => void;
   setSalarySettings: (amount: number, paydayDate: Date, periodStart: Date) => void;
   markSalaryReceived: () => void;
@@ -20,6 +29,7 @@ export const useSalaryStore = create<SalaryState>()(
       paydayDate: null,
       periodStartDate: null,
       hasReceivedSalary: false,
+      salaryHistory: [],
       setMonthlySalary: (amount) => {
         if (amount === null || isValidMonthlySalary(amount)) {
           set({ monthlySalary: amount, hasReceivedSalary: amount !== null && get().hasReceivedSalary });
@@ -44,8 +54,8 @@ export const useSalaryStore = create<SalaryState>()(
         });
       },
       markSalaryReceived: () => {
-        const { monthlySalary, paydayDate, periodStartDate, hasReceivedSalary } = get();
-        if (!isValidMonthlySalary(monthlySalary) || hasReceivedSalary) return;
+        const { monthlySalary, paydayDate, periodStartDate, hasReceivedSalary, salaryHistory } = get();
+        if (!isValidMonthlySalary(monthlySalary)) return;
 
         const currentTime = new Date();
         const period = getSalaryPeriod(
@@ -53,22 +63,46 @@ export const useSalaryStore = create<SalaryState>()(
           parseSalaryDate(paydayDate),
           parseSalaryDate(periodStartDate) ?? undefined,
         );
-        if (!isSameDay(period.payday, currentTime)) return;
+        if (period.payday > startOfDay(currentTime)) return;
+
+        const savedPaydayDate = format(period.payday, SALARY_DATE_FORMAT);
+        const savedPeriodStartDate = format(period.periodStart, SALARY_DATE_FORMAT);
+        const otherSalaryPeriods = salaryHistory.filter(
+          (entry) => entry.paydayDate !== savedPaydayDate || entry.periodStartDate !== savedPeriodStartDate,
+        );
+        if (hasReceivedSalary && otherSalaryPeriods.length < salaryHistory.length) return;
+
+        const salary = prepareSalaryCalculation(
+          monthlySalary,
+          currentTime,
+          period.payday,
+          period.periodStart,
+          useAttendanceStore.getState().unmarkedDates,
+        );
+        const historyEntry: SalaryHistoryEntry = {
+          monthlySalary,
+          paydayDate: savedPaydayDate,
+          periodStartDate: savedPeriodStartDate,
+          confirmedDate: format(currentTime, SALARY_DATE_FORMAT),
+          unmarkedDates: salary.unpaidDates.map((date) => format(date, SALARY_DATE_FORMAT)),
+        };
 
         set({
           hasReceivedSalary: true,
-          paydayDate: format(period.payday, SALARY_DATE_FORMAT),
-          periodStartDate: format(period.periodStart, SALARY_DATE_FORMAT),
+          paydayDate: savedPaydayDate,
+          periodStartDate: savedPeriodStartDate,
+          salaryHistory: [historyEntry, ...otherSalaryPeriods],
         });
       },
     }),
     {
       name: 'salary-settings',
-      partialize: ({ monthlySalary, paydayDate, periodStartDate, hasReceivedSalary }) => ({
+      partialize: ({ monthlySalary, paydayDate, periodStartDate, hasReceivedSalary, salaryHistory }) => ({
         monthlySalary,
         paydayDate,
         periodStartDate,
         hasReceivedSalary,
+        salaryHistory,
       }),
       merge: (persistedState, currentState) => {
         const savedSettings = persistedState as (Partial<SalaryState> & { paydayDay?: unknown }) | null;
@@ -98,6 +132,7 @@ export const useSalaryStore = create<SalaryState>()(
           ...currentState,
           ...savedPeriod,
           monthlySalary: isValidMonthlySalary(savedSettings?.monthlySalary) ? savedSettings.monthlySalary : null,
+          salaryHistory: parseSalaryHistory(savedSettings?.salaryHistory),
           hasReceivedSalary:
             savedSettings?.hasReceivedSalary === true &&
             isValidMonthlySalary(savedSettings?.monthlySalary) &&

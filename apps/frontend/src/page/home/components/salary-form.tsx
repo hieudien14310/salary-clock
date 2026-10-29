@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { format, isValid, startOfDay } from 'date-fns';
 import { Controller, useForm, useWatch, type ResolverResult } from 'react-hook-form';
-import { ArrowRight, CalendarDays, Check, CircleIcon, HardDrive, RefreshCwIcon, Wallet } from 'lucide-react';
+import { ArrowRight, CalendarDays, Check, HardDrive, RefreshCwIcon, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import { DatePicker } from '@/components/ui/date-picker';

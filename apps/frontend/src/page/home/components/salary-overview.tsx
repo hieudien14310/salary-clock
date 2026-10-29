@@ -26,6 +26,7 @@ export function SalaryOverview() {
   const periodStartDate = useSalaryStore((state) => state.periodStartDate);
   const hasReceivedSalary = useSalaryStore((state) => state.hasReceivedSalary);
   const markSalaryReceived = useSalaryStore((state) => state.markSalaryReceived);
+  const salaryHistory = useSalaryStore((state) => state.salaryHistory);
   const unmarkedDates = useAttendanceStore((state) => state.unmarkedDates);
   const salary = useMemo(
     () =>
@@ -40,7 +41,9 @@ export function SalaryOverview() {
   );
   const hasSalary = monthlySalary !== null;
   const daysUntilPayday = differenceInCalendarDays(salary.payday, currentDay);
-  const isPeriodComplete = hasReceivedSalary || daysUntilPayday < 0;
+  const hasSavedHistory = salaryHistory.some(
+    (entry) => entry.periodStartDate === periodStartDate && entry.paydayDate === paydayDate,
+  );
   const displayAmount = (amount: number, showDecimals = false) =>
     hasSalary ? formatCurrency(amount, showDecimals) : '—';
   const paydayLabel = format(salary.payday, 'dd/MM/yyyy');
@@ -100,9 +103,9 @@ export function SalaryOverview() {
                     ? 'Hôm nay là ngày nhận lương'
                     : `Còn ${daysUntilPayday} ngày`}
             </Badge>
-            {hasSalary && daysUntilPayday === 0 && !isPeriodComplete && (
+            {hasSalary && daysUntilPayday <= 0 && (!hasReceivedSalary || !hasSavedHistory) && (
               <Button type="button" onClick={markSalaryReceived}>
-                Đã nhận lương
+                {hasReceivedSalary ? 'Lưu vào lịch sử' : 'Đã nhận lương'}
               </Button>
             )}
           </div>
@@ -117,7 +120,8 @@ export function SalaryOverview() {
           ngày nghỉ. Mỗi ngày chọn “Không tính lương” bị trừ một đơn giá ngày; ngày ngoài kỳ không ảnh hưởng đến lương.{' '}
           <br /> Tiền tích lũy chỉ ghi nhận các ngày có tính lương đã trôi qua. Khi kỳ kết thúc hoặc xác nhận đã nhận
           lương, tích lũy bằng lương thực nhận sau khấu trừ và thu nhập trong ngày bằng 0. Chọn ngày bắt đầu và ngày
-          nhận lương mới để tính kỳ tiếp theo. Số tiền tích lũy là ước tính.
+          nhận lương mới để tính kỳ tiếp theo. Xác nhận đã nhận lương vào hoặc sau ngày nhận lương để lưu kỳ này vào
+          lịch sử. Số tiền tích lũy là ước tính.
         </AlertDescription>
       </Alert>
     </div>

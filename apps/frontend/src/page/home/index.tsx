@@ -1,4 +1,5 @@
 import { SalaryForm } from './components/salary-form';
+import { SalaryHistory } from './components/salary-history';
 import { SalaryOverview } from './components/salary-overview';
 
 const HomePage = () => {
@@ -19,6 +20,7 @@ const HomePage = () => {
         <SalaryForm />
         <SalaryOverview />
       </div>
+      <SalaryHistory />
     </main>
   );
 };
