@@ -18,4 +18,4 @@ Sử dụng tiếng việt để làm ngôn ngữ giao tiếp. Đối với các
 **Bắt buộc phải đọc các tài liệu sau để có thêm ngữ cảnh**
 
 1. @README.md
-2. @DESIGN.md (khi cần code UI thì tuân thủ theo file này)
+2.
