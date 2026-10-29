@@ -2,7 +2,8 @@
   "name": "salary",
   "scripts": {
     "fe:build": "bun run --cwd apps/frontend build",
-    "fe:dev": "bun run --cwd apps/frontend dev"
+    "fe:dev": "bun run --cwd apps/frontend dev",
+    "fe:fmt": "bun run --cwd apps/frontend fmt"
   },
   "workspaces": {
     "packages": [
