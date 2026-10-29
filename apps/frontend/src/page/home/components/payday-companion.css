@@ -1,0 +1,255 @@
+.payday-companion {
+  --scene-halo: #e0eee5;
+  --scene-shadow: #d6e0d6;
+  --scene-line: #c3d4c8;
+  --scene-paper: #fffdf7;
+  --scene-ink: #304b43;
+  --scene-green: #378d7b;
+  --scene-leaf: #86b8a1;
+  --scene-chair: #e2ae79;
+  --scene-wood: #a77c57;
+  --scene-peach: #efb599;
+  --scene-clay: #ca8a70;
+  --scene-skin: #efba98;
+  --scene-skin-shadow: #d69477;
+  --scene-steam: #93a79c;
+  background: linear-gradient(115deg, var(--card) 15%, #f2f6ef 100%);
+}
+
+.dark .payday-companion {
+  --scene-halo: #263e36;
+  --scene-shadow: #1d2b26;
+  --scene-line: #3c594b;
+  --scene-paper: #dae5d7;
+  --scene-ink: #29473d;
+  --scene-green: #53a48d;
+  --scene-leaf: #83b99e;
+  --scene-steam: #7e9a89;
+  background: linear-gradient(115deg, var(--card) 15%, #1c2b24 100%);
+}
+
+.payday-eyebrow {
+  color: #397b68;
+}
+
+.dark .payday-eyebrow {
+  color: #9bceba;
+}
+
+.payday-message {
+  border-color: var(--scene-green);
+}
+
+.payday-scene {
+  aspect-ratio: 13 / 8;
+  overflow: visible;
+}
+
+.payday-scene * {
+  transform-box: view-box;
+}
+
+.payday-clock-hand {
+  transform-origin: 235px 54px;
+  animation: payday-clock-tick 12s linear infinite;
+}
+
+.payday-body {
+  animation: payday-breathe 4s ease-in-out infinite;
+}
+
+.payday-head {
+  transform-origin: 303px 131px;
+  animation: payday-look-at-phone 7s ease-in-out infinite;
+}
+
+.payday-eyes {
+  transform-origin: 311px 103px;
+  animation: payday-blink 5.5s linear infinite;
+}
+
+.payday-phone-arm {
+  transform-origin: 326px 149px;
+  animation: payday-check-phone 7s ease-in-out infinite;
+}
+
+.payday-swinging-leg {
+  transform-origin: 335px 230px;
+  animation: payday-swing-leg 2.4s ease-in-out infinite;
+}
+
+.payday-thought {
+  animation: payday-float 5s ease-in-out infinite;
+}
+
+.payday-coin {
+  animation: payday-float 3.5s ease-in-out -1s infinite;
+}
+
+.payday-calendar {
+  transform-origin: 422px 42px;
+  animation: payday-calendar-sway 6s ease-in-out infinite;
+}
+
+.payday-steam {
+  animation: payday-steam-rise 3s ease-out infinite;
+}
+
+.payday-steam-delayed {
+  animation-delay: -1.5s;
+}
+
+.payday-sparkle {
+  animation: payday-glimmer 4s ease-in-out infinite;
+}
+
+.payday-confetti {
+  animation: payday-float 2.5s ease-in-out infinite;
+}
+
+.payday-companion[data-celebrating='true'] .payday-phone-arm {
+  animation-name: payday-celebrate;
+  animation-duration: 1.8s;
+}
+
+.payday-companion[data-celebrating='true'] .payday-head {
+  animation-name: payday-happy-nod;
+  animation-duration: 1.8s;
+}
+
+@keyframes payday-clock-tick {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes payday-breathe {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes payday-look-at-phone {
+  0%,
+  25%,
+  80%,
+  100% {
+    transform: rotate(0);
+  }
+  40%,
+  65% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes payday-blink {
+  0%,
+  42%,
+  46%,
+  70%,
+  74%,
+  100% {
+    transform: scaleY(1);
+  }
+  44%,
+  72% {
+    transform: scaleY(0.1);
+  }
+}
+
+@keyframes payday-check-phone {
+  0%,
+  25%,
+  80%,
+  100% {
+    transform: rotate(0);
+  }
+  40%,
+  65% {
+    transform: rotate(-8deg);
+  }
+}
+
+@keyframes payday-swing-leg {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(7deg);
+  }
+}
+
+@keyframes payday-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes payday-calendar-sway {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes payday-steam-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  25% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes payday-glimmer {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes payday-celebrate {
+  0%,
+  100% {
+    transform: rotate(-14deg);
+  }
+  50% {
+    transform: rotate(-28deg);
+  }
+}
+
+@keyframes payday-happy-nod {
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .payday-scene * {
+    animation: none !important;
+  }
+}
