@@ -38,7 +38,7 @@ export function PaydayCompanion() {
 
   return (
     <section
-      className="payday-companion mb-5 grid overflow-hidden rounded-2xl border lg:grid-cols-[1.15fr_1fr]"
+      className="payday-companion mb-3 grid overflow-hidden rounded-2xl border lg:grid-cols-[1.15fr_1fr]"
       aria-labelledby="salary-heading"
       data-celebrating={isCelebrating}
     >
