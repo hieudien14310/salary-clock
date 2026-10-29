@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'bun:test';
+import { afterAll, beforeAll, beforeEach, describe, expect, spyOn, test } from 'bun:test';
 
 const STORAGE_KEY = 'salary-settings';
 const ORIGINAL_WINDOW = Object.getOwnPropertyDescriptor(globalThis, 'window');
@@ -30,6 +30,21 @@ afterAll(() => {
 });
 
 describe('custom salary period storage', () => {
+  test('keeps in-memory settings usable when browser storage is full', () => {
+    const writeStorage = spyOn(window.localStorage, 'setItem').mockImplementation(() => {
+      throw new DOMException('Full', 'QuotaExceededError');
+    });
+    try {
+      expect(() =>
+        useSalaryStore.getState().setSalarySettings(60_000_000, new Date(2026, 10, 18), new Date(2026, 8, 20)),
+      ).not.toThrow();
+      expect(useSalaryStore.getState().monthlySalary).toBe(60_000_000);
+      expect(useSalaryStore.getState().paydayDate).toBe('2026-11-18');
+    } finally {
+      writeStorage.mockRestore();
+    }
+  });
+
   test('saves and rehydrates a start date other than the first day', async () => {
     useSalaryStore.getState().setSalarySettings(60_000_000, new Date(2026, 10, 18), new Date(2026, 8, 20));
     expect(JSON.parse(storedValues.get(STORAGE_KEY)!).state).toMatchObject({

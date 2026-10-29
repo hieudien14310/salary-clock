@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { formatSalaryInput, getSalaryPeriod, parseSalaryDate } from '@/lib/salary';
 import { salaryFormSchema, type SalaryFormInput, type SalaryFormValues } from '@/schema/salary-form-schema';
 import { useSalaryStore } from '@/stores/salary-store';
+import { useStorageStatusStore } from '@/stores/storage-status-store';
 
 const SALARY_SUGGESTIONS = [10_000_000, 20_000_000, 30_000_000];
 const PERIOD_DATE_FIELDS = [
@@ -23,6 +24,7 @@ const PERIOD_DATE_FIELDS = [
 ] as const;
 
 export function SalaryForm() {
+  const hasStorageError = useStorageStatusStore((state) => state.hasStorageError);
   const monthlySalary = useSalaryStore((state) => state.monthlySalary);
   const paydayDate = useSalaryStore((state) => state.paydayDate);
   const periodStartDate = useSalaryStore((state) => state.periodStartDate);
@@ -225,9 +227,15 @@ export function SalaryForm() {
           </Button>
         </form>
         <div className="space-y-3 border-t pt-5">
+          {hasStorageError && (
+            <p role="alert" className="text-xs leading-relaxed text-destructive">
+              Không thể đọc hoặc lưu đầy đủ dữ liệu trên trình duyệt. Bạn vẫn có thể sử dụng trang, nhưng thay đổi có
+              thể mất khi tải lại. Hãy kiểm tra quyền lưu trữ và dung lượng trống.
+            </p>
+          )}
           <p className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
             <HardDrive className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-            Mọi dữ liệu đều được lưu tại máy tính của bạn.
+            Dữ liệu chỉ được lưu trong trình duyệt của bạn, không gửi lên máy chủ.
           </p>
         </div>
       </CardContent>

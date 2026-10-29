@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { createBrowserStorage } from '@/lib/browser-storage';
 import { format, getDaysInMonth, isSameDay, isValid, setDate, startOfDay, startOfMonth } from 'date-fns';
 import { getSalaryPeriod, isValidMonthlySalary, parseSalaryDate, SALARY_DATE_FORMAT } from '@/lib/salary';
 
@@ -64,6 +65,7 @@ export const useSalaryStore = create<SalaryState>()(
     }),
     {
       name: 'salary-settings',
+      storage: createBrowserStorage(),
       partialize: ({ monthlySalary, paydayDate, periodStartDate, hasReceivedSalary }) => ({
         monthlySalary,
         paydayDate,

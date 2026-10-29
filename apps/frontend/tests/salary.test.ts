@@ -45,6 +45,28 @@ function calculateOctoberSalary(
 }
 
 describe('salary deductions from attendance', () => {
+  test('counts unsorted unpaid dates before, on, and after the calculation day', () => {
+    const preparedSalary = prepareSalaryCalculation(
+      25_000_000,
+      OCTOBER_CURRENT_TIME,
+      OCTOBER_PAYDAY,
+      OCTOBER_PERIOD_START,
+      ['2026-10-25', '2026-10-10', '2026-10-01', '2026-10-10'],
+    );
+    for (const [day, earnedInPeriod, earnedToday] of [
+      [1, 0, 0],
+      [2, 500_000, 500_000],
+      [10, 8_000_000, 0],
+      [11, 8_500_000, 500_000],
+      [25, 22_000_000, 0],
+      [26, 22_000_000, 0],
+    ]) {
+      const result = calculateSalaryProgress(preparedSalary, new Date(2026, 9, day, 12));
+      expect(result.earnedInPeriod).toBeCloseTo(earnedInPeriod);
+      expect(result.earnedToday).toBeCloseTo(earnedToday);
+    }
+  });
+
   test('reuses prepared rates and attendance while earnings advance every second', () => {
     const preparedSalary = prepareSalaryCalculation(
       MONTHLY_SALARY,

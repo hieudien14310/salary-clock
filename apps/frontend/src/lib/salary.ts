@@ -74,7 +74,8 @@ export function prepareSalaryCalculation(
   const period = getSalaryPeriod(currentTime, paydayDate, periodStartDate);
   const unpaidDates = [...new Set(unmarkedDates)]
     .map(parseSalaryDate)
-    .filter((date): date is Date => date !== null && date >= period.periodStart && date <= period.payday);
+    .filter((date): date is Date => date !== null && date >= period.periodStart && date <= period.payday)
+    .sort((firstDate, secondDate) => firstDate.getTime() - secondDate.getTime());
   const unpaidDaysCount = unpaidDates.length;
   const paidDaysCount = period.daysInPeriod - unpaidDaysCount;
   const netSalary = monthlySalary * (paidDaysCount / period.daysInPeriod);
@@ -113,18 +114,16 @@ export function calculateSalaryProgress(
   const todayTimestamp = startOfDay(currentTime).getTime();
   const elapsedDays = differenceInCalendarDays(currentTime, salary.periodStart) + todayFraction;
   const isPeriodComplete = hasReceivedSalary || differenceInCalendarDays(currentTime, salary.payday) > 0;
-  let unpaidElapsedDays = 0;
-  let isTodayUnpaid = false;
-
-  for (const date of salary.unpaidDates) {
-    const timestamp = date.getTime();
-    if (timestamp < todayTimestamp) unpaidElapsedDays += 1;
-    else if (timestamp === todayTimestamp) {
-      unpaidElapsedDays += todayFraction;
-      isTodayUnpaid = true;
-    }
+  // Find today's position in the sorted dates without scanning the whole period on each tick.
+  let firstUnpaidDayIndex = 0;
+  let lastUnpaidDayIndex = salary.unpaidDates.length;
+  while (firstUnpaidDayIndex < lastUnpaidDayIndex) {
+    const middleIndex = Math.floor((firstUnpaidDayIndex + lastUnpaidDayIndex) / 2);
+    if (salary.unpaidDates[middleIndex].getTime() < todayTimestamp) firstUnpaidDayIndex = middleIndex + 1;
+    else lastUnpaidDayIndex = middleIndex;
   }
-
+  const isTodayUnpaid = salary.unpaidDates[firstUnpaidDayIndex]?.getTime() === todayTimestamp;
+  const unpaidElapsedDays = firstUnpaidDayIndex + (isTodayUnpaid ? todayFraction : 0);
   const paidElapsedDays = Math.max(0, Math.min(elapsedDays, salary.daysInPeriod) - unpaidElapsedDays);
 
   return {

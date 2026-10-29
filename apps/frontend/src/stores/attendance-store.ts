@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { createBrowserStorage } from '@/lib/browser-storage';
 import { parseSalaryDate } from '@/lib/salary';
 
 type AttendanceState = {
@@ -23,6 +24,7 @@ export const useAttendanceStore = create<AttendanceState>()(
     }),
     {
       name: 'salary-attendance',
+      storage: createBrowserStorage(),
       partialize: ({ unmarkedDates }) => ({ unmarkedDates }),
       merge: (persistedState, currentState) => {
         const savedDates = (persistedState as { unmarkedDates?: unknown } | null)?.unmarkedDates;
