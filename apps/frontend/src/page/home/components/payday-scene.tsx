@@ -5,6 +5,8 @@ type PaydaySceneProps = {
 };
 
 export function PaydayScene({ speech, paydayLabel, isCelebrating }: PaydaySceneProps) {
+  const speechLines = speech.split('\n');
+
   return (
     <svg
       id="payday-scene"
@@ -49,8 +51,19 @@ export function PaydayScene({ speech, paydayLabel, isCelebrating }: PaydaySceneP
             fill="var(--scene-paper)"
             stroke="var(--scene-line)"
           />
-          <text x="126" y="121" textAnchor="middle" fontSize="12" fontWeight="550" fill="var(--scene-ink)">
-            {speech}
+          <text
+            x="126"
+            y={speechLines.length > 1 ? 113 : 121}
+            textAnchor="middle"
+            fontSize="12"
+            fontWeight="550"
+            fill="var(--scene-ink)"
+          >
+            {speechLines.map((line, index) => (
+              <tspan key={index} x="126" dy={index === 0 ? 0 : 16}>
+                {line}
+              </tspan>
+            ))}
           </text>
           <circle cx="185" cy="165" r="4" fill="var(--scene-line)" />
           <circle cx="201" cy="175" r="2.5" fill="var(--scene-line)" />

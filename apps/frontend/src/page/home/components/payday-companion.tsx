@@ -13,23 +13,24 @@ export function PaydayCompanion() {
   const { payday } = getSalaryPeriod(currentDay, parseSalaryDate(paydayDate));
   const daysUntilPayday = differenceInCalendarDays(payday, currentDay);
   const hasSalary = monthlySalary !== null;
-  const isCelebrating = hasSalary && hasReceivedSalary;
+  const isCelebrating = hasSalary && daysUntilPayday === 0;
+  const speech = isCelebrating
+    ? 'Ting ting! Lương về!'
+    : hasSalary && daysUntilPayday < 0
+      ? 'Hẹn kỳ lương mới!'
+      : 'Chăm chỉ làm việc,\nchờ lương về';
   let message = 'Chờ lương cũng có đồng đội.';
   let description = 'Điền kỳ lương bên dưới, mình cùng đếm ngược nhé.';
-  let speech = 'Lương ơi, tới chưa?';
 
-  if (isCelebrating) {
+  if (hasSalary && hasReceivedSalary) {
     message = 'Lương về rồi. Bạn xứng đáng!';
     description = 'Một kỳ cố gắng đã được đền đáp. Tự thưởng một chút nhé.';
-    speech = 'Ting ting! Lương về!';
   } else if (hasSalary && daysUntilPayday < 0) {
     message = 'Một kỳ lương đã khép lại.';
     description = 'Cập nhật kỳ lương mới để tiếp tục đồng hành cùng nhau.';
-    speech = 'Hẹn kỳ lương mới!';
-  } else if (hasSalary && daysUntilPayday === 0) {
+  } else if (isCelebrating) {
     message = 'Hôm nay là ngày nhận lương!';
     description = 'Khi tiền về, nhớ xác nhận “Đã nhận lương” ở bên dưới nhé.';
-    speech = 'Chờ tiếng ting ting…';
   } else if (hasSalary) {
     message = `Còn ${daysUntilPayday} ngày nữa là đến ngày lương.`;
     description = `Ngày hẹn ${format(payday, 'dd/MM/yyyy')} · Mỗi ngày cố gắng đều có giá trị.`;
