@@ -93,11 +93,10 @@ export function SalaryForm() {
   return (
     <Card className="h-fit gap-6 py-6">
       <CardHeader className="gap-2 px-6">
-        <div className="mb-2 flex size-10 items-center justify-center rounded-lg border bg-muted/50">
-          <Wallet className="size-5" aria-hidden="true" />
-        </div>
         <h2 className="text-lg font-semibold">Mức lương của bạn</h2>
-        <CardDescription className="leading-relaxed">Nhập tổng lương và chọn khoảng thời gian của kỳ.</CardDescription>
+        <CardDescription className="leading-relaxed">
+          Nhập lương của bạn và sau đó chọn thời gian nhận lương trong tháng.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6 px-6">
         <form onSubmit={handleSubmit(saveSalary)} noValidate className="space-y-5">
