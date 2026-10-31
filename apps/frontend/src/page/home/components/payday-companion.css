@@ -28,14 +28,6 @@
   background: linear-gradient(115deg, var(--card) 15%, #1c2b24 100%);
 }
 
-.payday-eyebrow {
-  color: #397b68;
-}
-
-.dark .payday-eyebrow {
-  color: #9bceba;
-}
-
 .payday-message {
   border-color: var(--scene-green);
 }

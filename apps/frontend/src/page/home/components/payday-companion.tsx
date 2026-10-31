@@ -38,19 +38,17 @@ export function PaydayCompanion() {
 
   return (
     <section
-      className="payday-companion mb-3 grid overflow-hidden rounded-2xl border lg:grid-cols-[1.15fr_1fr]"
+      className="payday-companion mb-3 grid items-center gap-4 overflow-hidden rounded-2xl border p-5 sm:p-7 lg:grid-cols-[1.15fr_1fr] lg:gap-8 lg:px-8 lg:py-5"
       aria-labelledby="salary-heading"
       data-celebrating={isCelebrating}
     >
-      <div className="relative z-10 flex flex-col justify-center gap-5 p-6 sm:p-8 lg:pr-0">
-        <p className="payday-eyebrow flex items-center gap-2 text-[10px] font-semibold tracking-[0.2em] uppercase">
-          <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
-          Có hẹn với ngày lương
-        </p>
+      <div className="relative z-10 flex min-w-0 flex-col gap-5">
         <div className="space-y-3">
-          <h1 id="salary-heading" className="max-w-xl text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">
-            Nhìn mức lương
-            <br className="hidden sm:block" /> theo cách khác.
+          <h1
+            id="salary-heading"
+            className="max-w-xl text-3xl leading-tight font-semibold tracking-tight text-balance sm:text-4xl"
+          >
+            Nhìn mức lương theo cách khác.
           </h1>
           <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
             Mỗi giây trôi qua, một chút thu nhập tích lũy. Thêm một chút động lực cho ngày làm việc của bạn.
@@ -61,7 +59,7 @@ export function PaydayCompanion() {
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{description}</p>
         </div>
       </div>
-      <div className="flex min-w-0 items-center justify-center px-2 pb-3 lg:pt-3">
+      <div className="mx-auto flex w-full min-w-0 max-w-[460px] items-center justify-center">
         <PaydayScene
           speech={speech}
           paydayLabel={hasSalary ? format(payday, 'dd') : '₫'}
