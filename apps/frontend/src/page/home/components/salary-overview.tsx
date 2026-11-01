@@ -72,7 +72,8 @@ export function SalaryOverview() {
       </section>
 
       <MonthlyAttendance
-        key={`${salary.periodStart.getTime()}-${salary.payday.getTime()}`}
+        key={`${salary.periodStart.getTime()}-${salary.payday.getTime()}-${format(currentDay, 'yyyy-MM')}`}
+        currentDay={currentDay}
         periodStart={salary.periodStart}
         payday={salary.payday}
         daysInPeriod={salary.daysInPeriod}

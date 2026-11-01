@@ -24,11 +24,21 @@ const WEEKDAYS = [
   { label: 'Chủ Nhật', shortLabel: 'CN' },
 ];
 
-type MonthlyAttendanceProps = Pick<SalaryCalculation, 'periodStart' | 'payday' | 'daysInPeriod' | 'paidDaysCount'>;
+type MonthlyAttendanceProps = Pick<SalaryCalculation, 'periodStart' | 'payday' | 'daysInPeriod' | 'paidDaysCount'> & {
+  currentDay: Date;
+};
 
-export function MonthlyAttendance({ periodStart, payday, daysInPeriod, paidDaysCount }: MonthlyAttendanceProps) {
-  const [monthOffset, setMonthOffset] = useState(0);
+export function MonthlyAttendance({
+  periodStart,
+  payday,
+  daysInPeriod,
+  paidDaysCount,
+  currentDay,
+}: MonthlyAttendanceProps) {
   const lastMonthOffset = differenceInCalendarMonths(payday, periodStart);
+  const [monthOffset, setMonthOffset] = useState(() =>
+    Math.max(0, Math.min(differenceInCalendarMonths(currentDay, periodStart), lastMonthOffset)),
+  );
   const month = addMonths(startOfMonth(periodStart), monthOffset);
   const unmarkedDates = useAttendanceStore((state) => state.unmarkedDates);
   const toggleAttendance = useAttendanceStore((state) => state.toggleAttendance);
