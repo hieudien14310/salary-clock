@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
-import { ChevronDownIcon } from 'lucide-react';
+import { CalendarDays, ChevronDownIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -31,11 +31,11 @@ export function DatePicker({ value, onChange, placeholder = 'Chọn ngày', ...p
             type="button"
             variant="outline"
             data-empty={!value}
-            className="h-10 w-full justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
+            className="h-11 w-full justify-between rounded-xl px-3 text-left font-normal data-[empty=true]:text-muted-foreground"
             {...props}
           >
-            {value ? format(value, 'dd/MM/yyyy') : <span>{placeholder}</span>}
-            <ChevronDownIcon data-icon="inline-end" />
+            <span className="flex items-center gap-2.5"><CalendarDays className="size-4 text-muted-foreground" aria-hidden="true" />{value ? format(value, 'dd/MM/yyyy') : placeholder}</span>
+            <ChevronDownIcon data-icon="inline-end" className="size-3.5 text-muted-foreground" aria-hidden="true" />
           </Button>
         }
       />

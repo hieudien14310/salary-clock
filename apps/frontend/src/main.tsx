@@ -7,7 +7,7 @@ import router from '@/router.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider defaultTheme="dark">
+    <ThemeProvider defaultTheme="light">
       <RouterProvider router={router} />
     </ThemeProvider>
   </StrictMode>,

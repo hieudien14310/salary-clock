@@ -1,4 +1,5 @@
 import { differenceInCalendarDays, format } from 'date-fns';
+import { ArrowUpRight, PartyPopper, ShieldCheck, Sparkles } from 'lucide-react';
 import { useCurrentDay } from '@/hooks/use-current-time';
 import { getSalaryPeriod, parseSalaryDate } from '@/lib/salary';
 import { useSalaryStore } from '@/stores/salary-store';
@@ -13,14 +14,14 @@ export function PaydayCompanion() {
   const { payday } = getSalaryPeriod(currentDay, parseSalaryDate(paydayDate));
   const daysUntilPayday = differenceInCalendarDays(payday, currentDay);
   const hasSalary = monthlySalary !== null;
-  const isCelebrating = hasSalary && daysUntilPayday === 0;
+  const isCelebrating = hasSalary && (hasReceivedSalary || daysUntilPayday === 0);
   const speech = isCelebrating
     ? 'Ting ting! Lương về!'
     : hasSalary && daysUntilPayday < 0
       ? 'Hẹn kỳ lương mới!'
-      : 'Chăm chỉ làm việc,\nchờ lương về';
+      : 'Cứ thong thả,\nlương đang lớn lên!';
   let message = 'Chờ lương cũng có đồng đội.';
-  let description = 'Điền kỳ lương bên dưới, mình cùng đếm ngược nhé.';
+  let description = 'Thêm mức lương của bạn để bắt đầu nhé.';
 
   if (hasSalary && hasReceivedSalary) {
     message = 'Lương về rồi. Bạn xứng đáng!';
@@ -38,34 +39,54 @@ export function PaydayCompanion() {
 
   return (
     <section
-      className="payday-companion mb-3 grid items-center gap-4 overflow-hidden rounded-2xl border p-5 sm:p-7 lg:grid-cols-[1.15fr_1fr] lg:gap-8 lg:px-8 lg:py-5"
+      className="payday-companion relative grid items-center gap-4 py-8 sm:py-10 md:grid-cols-[1.25fr_1fr] md:gap-8"
       aria-labelledby="salary-heading"
       data-celebrating={isCelebrating}
     >
       <div className="relative z-10 flex min-w-0 flex-col gap-5">
-        <div className="space-y-3">
+        <p className="section-eyebrow flex items-center gap-2 text-primary">
+          <Sparkles className="size-3.5" aria-hidden="true" /> Mỗi ngày một chút rủng rỉnh
+        </p>
+        <div className="space-y-4">
           <h1
             id="salary-heading"
-            className="max-w-xl text-3xl leading-tight font-semibold tracking-tight text-balance sm:text-4xl"
+            className="max-w-2xl text-[2rem] leading-[1.2] font-semibold tracking-[-0.045em] sm:text-[2.75rem] lg:text-[3.2rem]"
           >
-            Nhìn mức lương theo cách khác.
+            Mỗi giây trôi qua,
+            <br />
+            <span className="hero-highlight relative inline-block text-primary">thêm một chút vui.</span>
           </h1>
-          <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
-            Mỗi giây trôi qua, một chút thu nhập tích lũy. Thêm một chút động lực cho ngày làm việc của bạn.
+          <p className="max-w-md text-sm leading-7 text-muted-foreground">
+            Nhìn thu nhập lớn lên theo từng giây. Một chút động lực để ngày làm việc của bạn nhẹ nhàng hơn.
           </p>
         </div>
-        <div className="payday-message border-l-2 pl-3" role="status" aria-atomic="true">
-          <p className="text-sm font-medium">{message}</p>
-          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{description}</p>
+        <div className="flex items-start gap-3" role="status" aria-atomic="true">
+          <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-[var(--warm)] text-[var(--warm-foreground)]">
+            {isCelebrating ? (
+              <PartyPopper className="size-4" aria-hidden="true" />
+            ) : (
+              <Sparkles className="size-4" aria-hidden="true" />
+            )}
+          </span>
+          <div>
+            <p className="text-sm font-medium">{message}</p>
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{description}</p>
+          </div>
         </div>
       </div>
-      <div className="mx-auto flex w-full min-w-0 max-w-[460px] items-center justify-center">
+      <div className="relative mx-auto hidden w-full min-w-0 max-w-[420px] items-center justify-center md:flex">
         <PaydayScene
           speech={speech}
           paydayLabel={hasSalary ? format(payday, 'dd') : '₫'}
           isCelebrating={isCelebrating}
         />
+        <span className="hero-sticker absolute right-0 bottom-6 inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3.5 py-2 text-xs shadow-sm">
+          <ArrowUpRight className="size-4 text-primary" aria-hidden="true" /> Tích tiểu thành đại
+        </span>
       </div>
+      <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground md:absolute md:right-4 md:bottom-4">
+        <ShieldCheck className="size-3.5" aria-hidden="true" /> Không cần tài khoản · Dữ liệu chỉ ở trên máy bạn
+      </p>
     </section>
   );
 }

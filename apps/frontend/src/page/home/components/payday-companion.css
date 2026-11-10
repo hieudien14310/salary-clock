@@ -13,7 +13,7 @@
   --scene-skin: #efba98;
   --scene-skin-shadow: #d69477;
   --scene-steam: #93a79c;
-  background: linear-gradient(115deg, var(--card) 15%, #f2f6ef 100%);
+  animation: enter-page 500ms ease-out both;
 }
 
 .dark .payday-companion {
@@ -25,11 +25,22 @@
   --scene-green: #53a48d;
   --scene-leaf: #83b99e;
   --scene-steam: #7e9a89;
-  background: linear-gradient(115deg, var(--card) 15%, #1c2b24 100%);
 }
 
-.payday-message {
-  border-color: var(--scene-green);
+.hero-highlight::after {
+  content: '';
+  position: absolute;
+  right: -2%;
+  bottom: -0.13em;
+  left: 0;
+  height: 0.16em;
+  border-top: 3px solid #d9b75f;
+  border-radius: 50%;
+  transform: rotate(-1deg);
+}
+
+.hero-sticker {
+  animation: payday-float 5s ease-in-out infinite;
 }
 
 .payday-scene {
