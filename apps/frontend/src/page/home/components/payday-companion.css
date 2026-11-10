@@ -16,17 +16,6 @@
   animation: enter-page 500ms ease-out both;
 }
 
-.dark .payday-companion {
-  --scene-halo: #263e36;
-  --scene-shadow: #1d2b26;
-  --scene-line: #3c594b;
-  --scene-paper: #dae5d7;
-  --scene-ink: #29473d;
-  --scene-green: #53a48d;
-  --scene-leaf: #83b99e;
-  --scene-steam: #7e9a89;
-}
-
 .hero-highlight::after {
   content: '';
   position: absolute;
