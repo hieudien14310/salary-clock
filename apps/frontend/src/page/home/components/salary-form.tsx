@@ -127,7 +127,7 @@ export function SalaryForm() {
     <Card id="salary-settings" className="salary-settings surface-card h-fit gap-6 py-6">
       <CardHeader className="gap-3 px-6">
         <div className="flex items-center gap-3">
-          <span className="flex size-11 items-center justify-center rounded-[14px] border-[1.5px] border-cozy-border-cocoa bg-cozy-cream text-cozy-burgundy">
+          <span className="flex size-11 items-center justify-center rounded-[14px] border-[1.5px] border-cozy-border-cocoa bg-cozy-cream text-cozy-burgundy shadow-[inset_0_1px_0_rgba(255,253,247,0.85),0_2.5px_0_0_rgba(125,99,91,0.35)]">
             <Wallet className="size-5" aria-hidden="true" />
           </span>
           <div>
@@ -181,7 +181,7 @@ export function SalaryForm() {
                 )}
               />
               <InputGroupAddon align="inline-end" className="pr-3">
-                <InputGroupText className="rounded-[8px] border border-cozy-border-sand bg-cozy-cream px-2 py-0.5 text-xs font-bold text-cozy-espresso">
+                <InputGroupText className="rounded-[8px] border border-cozy-border-sand bg-cozy-cream px-2 py-0.5 text-xs font-bold text-cozy-espresso shadow-[inset_0_1px_0_rgba(255,253,247,0.85),0_1.5px_0_0_#DFC896]">
                   VND
                 </InputGroupText>
               </InputGroupAddon>
@@ -219,7 +219,7 @@ export function SalaryForm() {
               <button
                 type="button"
                 onClick={applyCurrentMonthPeriod}
-                className="rounded-full border-[1.5px] border-cozy-border-cocoa bg-cozy-blue px-2.5 py-0.5 text-[11px] font-bold text-cozy-espresso transition-colors hover:bg-cozy-cream"
+                className="cozy-pill-tab bg-cozy-blue px-2.5 py-0.5 text-[11px] font-bold hover:bg-cozy-cream"
               >
                 Tháng này
               </button>
@@ -261,8 +261,8 @@ export function SalaryForm() {
               Tính cả ngày bắt đầu, ngày nhận lương và cuối tuần.
             </p>
             {previewPeriod && (
-              <div className="flex items-center gap-3 rounded-[14px] border-[1.5px] border-cozy-border-sand bg-cozy-cream/75 p-3.5 text-cozy-espresso">
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-[10px] border border-cozy-border-cocoa/50 bg-cozy-canvas text-cozy-burgundy">
+              <div className="flex items-center gap-3 rounded-[14px] border-[1.5px] border-cozy-border-sand bg-cozy-cream/85 p-3.5 text-cozy-espresso shadow-[inset_0_1.5px_0_rgba(255,253,247,0.85),0_3px_0_0_#DFC896]">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-[10px] border border-cozy-border-cocoa/50 bg-cozy-canvas text-cozy-burgundy shadow-[0_1.5px_0_rgba(125,99,91,0.2)]">
                   <CalendarDays className="size-4" aria-hidden="true" />
                 </span>
                 <div className="space-y-0.5">

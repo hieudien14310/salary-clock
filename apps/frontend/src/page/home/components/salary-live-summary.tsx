@@ -35,14 +35,14 @@ export function SalaryLiveSummary({ salary, currentDay, hasReceivedSalary }: Sal
       <div className="earnings-hero px-5 py-6 sm:px-7 sm:py-7">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="flex items-center gap-2.5 text-base font-bold text-cozy-burgundy">
-            <span className="flex size-8 items-center justify-center rounded-[10px] border-[1.5px] border-cozy-border-table bg-cozy-mint text-cozy-forest">
+            <span className="flex size-8 items-center justify-center rounded-[10px] border-[1.5px] border-cozy-border-table bg-cozy-mint text-cozy-forest shadow-[inset_0_1px_0_rgba(255,253,247,0.8),0_2px_0_0_#82AE94]">
               <TrendingUp className="size-4" aria-hidden="true" />
             </span>
             Thành quả của bạn
           </h2>
           {hasSalary && (
             <span
-              className={`inline-flex items-center gap-2 rounded-full border-[1.5px] border-cozy-border-cocoa px-3 py-1 text-[11px] font-bold ${statusBadge.className}`}
+              className={`cozy-sticker inline-flex items-center gap-2 rounded-full border-[1.5px] border-cozy-border-cocoa px-3 py-1 text-[11px] font-bold ${statusBadge.className}`}
             >
               <span className="live-dot" data-active={isEarning} aria-hidden="true" />
               {statusBadge.label}
@@ -63,7 +63,7 @@ export function SalaryLiveSummary({ salary, currentDay, hasReceivedSalary }: Sal
             <div className="mt-6 space-y-2.5">
               <div className="flex items-center justify-between gap-3 text-xs">
                 <span className="font-bold text-cozy-espresso">Hành trình đến ngày lương</span>
-                <span className="rounded-full border border-cozy-border-sand bg-cozy-cream px-2.5 py-0.5 font-bold text-cozy-burgundy tabular-nums">
+                <span className="rounded-full border border-cozy-border-sand bg-cozy-cream px-2.5 py-0.5 font-bold text-cozy-burgundy shadow-[inset_0_1px_0_rgba(255,253,247,0.85),0_1.5px_0_0_#DFC896] tabular-nums">
                   {progressLabel}%
                 </span>
               </div>
@@ -95,7 +95,7 @@ export function SalaryLiveSummary({ salary, currentDay, hasReceivedSalary }: Sal
             </p>
             <a
               href="#salary-settings"
-              className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-full border-[1.5px] border-cozy-border-cocoa bg-cozy-sage px-4.5 text-xs font-bold text-cozy-espresso transition-colors hover:bg-[#84BC98]"
+              className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-full border-[1.5px] border-cozy-border-cocoa bg-cozy-sage px-4.5 text-xs font-bold text-cozy-espresso shadow-[inset_0_1.5px_0_rgba(255,253,247,0.65),0_3px_0_0_#6B534B,0_8px_16px_-6px_rgba(78,56,53,0.2)] transition-all hover:-translate-y-px hover:bg-[#84BC98] active:translate-y-[1.5px] active:shadow-[0_1px_0_0_#6B534B]"
             >
               Thiết lập kỳ lương <ArrowRight className="size-3.5" aria-hidden="true" />
             </a>

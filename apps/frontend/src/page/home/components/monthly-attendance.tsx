@@ -71,7 +71,7 @@ export function MonthlyAttendance({
       <CardContent className="space-y-5 px-4 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <span className="flex size-10 items-center justify-center rounded-[12px] border-[1.5px] border-cozy-border-cocoa bg-cozy-blue text-cozy-burgundy">
+            <span className="flex size-10 items-center justify-center rounded-[12px] border-[1.5px] border-cozy-border-cocoa bg-cozy-blue text-cozy-burgundy shadow-[inset_0_1px_0_rgba(255,253,247,0.85),0_2.5px_0_0_rgba(125,99,91,0.3)]">
               <CalendarCheck2 className="size-4" aria-hidden="true" />
             </span>
             <div>
@@ -83,7 +83,7 @@ export function MonthlyAttendance({
           </div>
           <p
             role="status"
-            className="rounded-full border-[1.5px] border-cozy-border-table bg-cozy-mint px-3 py-1 text-[11px] font-bold text-cozy-forest tabular-nums"
+            className="rounded-full border-[1.5px] border-cozy-border-table bg-cozy-mint px-3 py-1 text-[11px] font-bold text-cozy-forest shadow-[inset_0_1px_0_rgba(255,253,247,0.75),0_2px_0_0_#82AE94] tabular-nums"
           >
             {hasSalary ? `${paidDaysCount}/${daysInPeriod} ngày có lương` : 'Chưa thiết lập'}
           </p>

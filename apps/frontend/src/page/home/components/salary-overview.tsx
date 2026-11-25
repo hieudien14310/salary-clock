@@ -134,11 +134,11 @@ export function SalaryOverview() {
       {hasSalary && (
         <Card
           key={String(hasReceivedSalary)}
-          className={`surface-card border-2 border-cozy-gold/75 bg-cozy-cream py-5 ${hasReceivedSalary ? 'payday-celebration' : ''}`}
+          className={`surface-card payday-card-warm border-2 border-cozy-gold/75 bg-cozy-cream py-5 ${hasReceivedSalary ? 'payday-celebration' : ''}`}
         >
           <CardContent className="flex flex-wrap items-center justify-between gap-4 px-5 sm:px-6">
             <div className="flex items-center gap-3">
-              <div className="flex size-11 shrink-0 items-center justify-center rounded-[14px] border-[1.5px] border-cozy-border-cocoa bg-cozy-canvas text-cozy-burgundy">
+              <div className="flex size-11 shrink-0 items-center justify-center rounded-[14px] border-[1.5px] border-cozy-border-cocoa bg-cozy-canvas text-cozy-burgundy shadow-[inset_0_1px_0_rgba(255,253,247,0.9),0_2.5px_0_0_rgba(125,99,91,0.3)]">
                 {hasReceivedSalary ? (
                   <PartyPopper className="size-5 text-cozy-coral" aria-hidden="true" />
                 ) : (
@@ -161,7 +161,7 @@ export function SalaryOverview() {
             <div className="flex flex-wrap items-center gap-2" role="status">
               <Badge
                 variant="outline"
-                className="h-auto rounded-full border-[1.5px] border-cozy-border-cocoa bg-cozy-canvas px-3 py-1.5 text-xs font-bold text-cozy-espresso"
+                className="h-auto rounded-full border-[1.5px] border-cozy-border-cocoa bg-cozy-canvas px-3 py-1.5 text-xs font-bold text-cozy-espresso shadow-[inset_0_1px_0_rgba(255,253,247,0.9),0_2px_0_0_rgba(125,99,91,0.28)]"
               >
                 {hasReceivedSalary
                   ? 'Đã nhận lương'
@@ -180,7 +180,7 @@ export function SalaryOverview() {
               {isPeriodComplete && (
                 <a
                   href="#salary-settings"
-                  className="inline-flex min-h-9 items-center gap-1.5 rounded-full border-[1.5px] border-cozy-border-cocoa bg-cozy-canvas px-3.5 py-1.5 text-xs font-bold text-cozy-burgundy transition-colors hover:bg-cozy-blue"
+                  className="cozy-pill-tab inline-flex min-h-9 items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-cozy-burgundy hover:bg-cozy-blue"
                 >
                   Thiết lập kỳ mới <ArrowRight className="size-3.5" aria-hidden="true" />
                 </a>
@@ -194,7 +194,7 @@ export function SalaryOverview() {
         <CardContent className="space-y-4 px-5 sm:px-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
-              <span className="flex size-8 items-center justify-center rounded-[10px] border-[1.5px] border-cozy-border-cocoa bg-cozy-cream text-cozy-burgundy">
+              <span className="flex size-8 items-center justify-center rounded-[10px] border-[1.5px] border-cozy-border-cocoa bg-cozy-cream text-cozy-burgundy shadow-[inset_0_1px_0_rgba(255,253,247,0.85),0_2px_0_0_rgba(125,99,91,0.3)]">
                 <BookOpenText className="size-4" aria-hidden="true" />
               </span>
               <h2 className="text-base font-bold text-cozy-burgundy">Sổ ghi chép kỳ lương</h2>

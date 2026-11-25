@@ -19,7 +19,7 @@ const ErrorBoundaryPage = () => {
             <EmptyHeader className="max-w-none gap-3">
               <EmptyMedia
                 variant="icon"
-                className="size-14 rounded-[16px] border-[1.5px] border-cozy-border-cocoa bg-cozy-cream text-cozy-burgundy"
+                className="size-14 rounded-[16px] border-[1.5px] border-cozy-border-cocoa bg-cozy-cream text-cozy-burgundy shadow-[inset_0_1.5px_0_rgba(255,253,247,0.85),0_3px_0_0_rgba(125,99,91,0.3)]"
               >
                 <ErrorIcon className="size-7" aria-hidden="true" />
               </EmptyMedia>

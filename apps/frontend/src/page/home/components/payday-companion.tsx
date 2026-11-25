@@ -44,7 +44,7 @@ export function PaydayCompanion() {
       data-celebrating={isCelebrating}
     >
       <div className="relative z-10 flex min-w-0 flex-col gap-5">
-        <p className="section-eyebrow inline-flex w-fit items-center gap-2 rounded-full border-[1.5px] border-cozy-border-cocoa bg-cozy-cream px-3.5 py-1.5 text-cozy-burgundy">
+        <p className="section-eyebrow cozy-sticker inline-flex w-fit items-center gap-2 rounded-full border-[1.5px] border-cozy-border-cocoa bg-cozy-cream px-3.5 py-1.5 text-cozy-burgundy">
           <Sparkles className="size-3.5 text-cozy-coral" aria-hidden="true" /> Mỗi ngày một chút rủng rỉnh
         </p>
         <div className="space-y-3.5">
@@ -60,12 +60,8 @@ export function PaydayCompanion() {
             Nhìn thu nhập lớn lên theo từng giây. Một chút động lực để ngày làm việc của bạn nhẹ nhàng hơn.
           </p>
         </div>
-        <div
-          className="flex items-start gap-3 rounded-[16px] border-[1.5px] border-cozy-border-sand bg-cozy-canvas px-4 py-3.5"
-          role="status"
-          aria-atomic="true"
-        >
-          <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-[12px] border-[1.5px] border-cozy-border-cocoa bg-cozy-cream text-cozy-burgundy">
+        <div className="cozy-note-card flex items-start gap-3 px-4 py-3.5" role="status" aria-atomic="true">
+          <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-[12px] border-[1.5px] border-cozy-border-cocoa bg-cozy-cream text-cozy-burgundy shadow-[inset_0_1px_0_rgba(255,253,247,0.85),0_2px_0_0_rgba(125,99,91,0.3)]">
             {isCelebrating ? (
               <PartyPopper className="size-4 text-cozy-coral" aria-hidden="true" />
             ) : (
@@ -84,7 +80,7 @@ export function PaydayCompanion() {
           paydayLabel={hasSalary ? format(payday, 'dd') : '₫'}
           isCelebrating={isCelebrating}
         />
-        <span className="hero-sticker absolute right-1 bottom-5 inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-cozy-border-cocoa bg-cozy-mint px-3.5 py-1.5 text-xs font-bold text-cozy-espresso">
+        <span className="hero-sticker cozy-sticker absolute right-1 bottom-5 inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-cozy-border-cocoa bg-cozy-mint px-3.5 py-1.5 text-xs font-bold text-cozy-espresso">
           <ArrowUpRight className="size-4 text-cozy-forest" aria-hidden="true" /> Tích tiểu thành đại
         </span>
       </div>
