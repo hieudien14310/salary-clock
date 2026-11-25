@@ -31,15 +31,18 @@ export function DatePicker({ value, onChange, placeholder = 'Chọn ngày', ...p
             type="button"
             variant="outline"
             data-empty={!value}
-            className="h-11 w-full justify-between rounded-xl px-3 text-left font-normal data-[empty=true]:text-muted-foreground"
+            className="h-11 w-full justify-between rounded-[12px] border-[1.5px] border-cozy-border-cocoa bg-cozy-surface px-3.5 text-left font-semibold text-cozy-espresso hover:bg-cozy-canvas data-[empty=true]:font-medium data-[empty=true]:text-muted-foreground"
             {...props}
           >
-            <span className="flex items-center gap-2.5"><CalendarDays className="size-4 text-muted-foreground" aria-hidden="true" />{value ? format(value, 'dd/MM/yyyy') : placeholder}</span>
+            <span className="flex items-center gap-2.5">
+              <CalendarDays className="size-4 text-cozy-burgundy" aria-hidden="true" />
+              <span className="tabular-nums">{value ? format(value, 'dd/MM/yyyy') : placeholder}</span>
+            </span>
             <ChevronDownIcon data-icon="inline-end" className="size-3.5 text-muted-foreground" aria-hidden="true" />
           </Button>
         }
       />
-      <PopoverContent className="p-0" align="start">
+      <PopoverContent className="w-76 p-2.5" align="start">
         <React.Suspense
           fallback={
             <div className="flex h-72 items-center justify-center">

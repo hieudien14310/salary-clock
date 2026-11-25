@@ -39,53 +39,58 @@ export function PaydayCompanion() {
 
   return (
     <section
-      className="payday-companion relative grid items-center gap-4 py-8 sm:py-10 md:grid-cols-[1.25fr_1fr] md:gap-8"
+      className="payday-companion relative grid items-center gap-5 py-7 sm:py-9 md:grid-cols-[1.2fr_1fr] md:gap-8"
       aria-labelledby="salary-heading"
       data-celebrating={isCelebrating}
     >
       <div className="relative z-10 flex min-w-0 flex-col gap-5">
-        <p className="section-eyebrow flex items-center gap-2 text-primary">
-          <Sparkles className="size-3.5" aria-hidden="true" /> Mỗi ngày một chút rủng rỉnh
+        <p className="section-eyebrow inline-flex w-fit items-center gap-2 rounded-full border-[1.5px] border-cozy-border-cocoa bg-cozy-cream px-3.5 py-1.5 text-cozy-burgundy">
+          <Sparkles className="size-3.5 text-cozy-coral" aria-hidden="true" /> Mỗi ngày một chút rủng rỉnh
         </p>
-        <div className="space-y-4">
+        <div className="space-y-3.5">
           <h1
             id="salary-heading"
-            className="max-w-2xl text-[2rem] leading-[1.2] font-semibold tracking-[-0.045em] sm:text-[2.75rem] lg:text-[3.2rem]"
+            className="max-w-2xl text-[2.05rem] leading-[1.18] font-extrabold tracking-[-0.025em] text-cozy-burgundy sm:text-[2.75rem] lg:text-[3.15rem]"
           >
             Mỗi giây trôi qua,
             <br />
-            <span className="hero-highlight relative inline-block text-primary">thêm một chút vui.</span>
+            <span className="hero-highlight relative inline-block text-cozy-forest">thêm một chút vui.</span>
           </h1>
-          <p className="max-w-md text-sm leading-7 text-muted-foreground">
+          <p className="max-w-md text-sm leading-7 font-medium text-cozy-taupe">
             Nhìn thu nhập lớn lên theo từng giây. Một chút động lực để ngày làm việc của bạn nhẹ nhàng hơn.
           </p>
         </div>
-        <div className="flex items-start gap-3" role="status" aria-atomic="true">
-          <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-[var(--warm)] text-[var(--warm-foreground)]">
+        <div
+          className="flex items-start gap-3 rounded-[16px] border-[1.5px] border-cozy-border-sand bg-cozy-canvas px-4 py-3.5"
+          role="status"
+          aria-atomic="true"
+        >
+          <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-[12px] border-[1.5px] border-cozy-border-cocoa bg-cozy-cream text-cozy-burgundy">
             {isCelebrating ? (
-              <PartyPopper className="size-4" aria-hidden="true" />
+              <PartyPopper className="size-4 text-cozy-coral" aria-hidden="true" />
             ) : (
-              <Sparkles className="size-4" aria-hidden="true" />
+              <Sparkles className="size-4 text-cozy-gold" aria-hidden="true" />
             )}
           </span>
           <div>
-            <p className="text-sm font-medium">{message}</p>
-            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{description}</p>
+            <p className="text-sm font-bold text-cozy-espresso">{message}</p>
+            <p className="mt-0.5 text-xs leading-relaxed font-medium text-cozy-taupe">{description}</p>
           </div>
         </div>
       </div>
-      <div className="relative mx-auto hidden w-full min-w-0 max-w-[420px] items-center justify-center md:flex">
+      <div className="relative mx-auto hidden w-full min-w-0 max-w-[430px] items-center justify-center md:flex">
         <PaydayScene
           speech={speech}
           paydayLabel={hasSalary ? format(payday, 'dd') : '₫'}
           isCelebrating={isCelebrating}
         />
-        <span className="hero-sticker absolute right-0 bottom-6 inline-flex items-center gap-2 rounded-full border border-border/60 bg-card px-3.5 py-2 text-xs shadow-sm">
-          <ArrowUpRight className="size-4 text-primary" aria-hidden="true" /> Tích tiểu thành đại
+        <span className="hero-sticker absolute right-1 bottom-5 inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-cozy-border-cocoa bg-cozy-mint px-3.5 py-1.5 text-xs font-bold text-cozy-espresso">
+          <ArrowUpRight className="size-4 text-cozy-forest" aria-hidden="true" /> Tích tiểu thành đại
         </span>
       </div>
-      <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground md:absolute md:right-4 md:bottom-4">
-        <ShieldCheck className="size-3.5" aria-hidden="true" /> Không cần tài khoản · Dữ liệu chỉ ở trên máy bạn
+      <p className="flex items-center gap-1.5 text-[11px] font-semibold text-cozy-taupe md:absolute md:right-4 md:bottom-4">
+        <ShieldCheck className="size-3.5 text-cozy-forest" aria-hidden="true" /> Không cần tài khoản · Dữ liệu chỉ ở
+        trên máy bạn
       </p>
     </section>
   );
