@@ -11,17 +11,20 @@ const ErrorBoundaryPage = () => {
   const ErrorIcon = isNotFound ? FileQuestion : CircleAlert;
 
   return (
-    <main className="flex min-h-svh items-center justify-center bg-background p-3" aria-labelledby="error-title">
+    <main className="flex min-h-svh items-center justify-center p-4" aria-labelledby="error-title">
       <div className="w-full max-w-lg space-y-6">
-        <p className="text-center text-sm font-medium text-muted-foreground">Salary · Mỗi giây đều có giá trị.</p>
-        <Card className="py-0">
+        <p className="text-center text-sm font-bold text-cozy-taupe">Salary · Mỗi giây đều có giá trị.</p>
+        <Card className="surface-card py-0">
           <Empty className="gap-6 p-6 sm:p-10">
             <EmptyHeader className="max-w-none gap-3">
-              <EmptyMedia variant="icon" className="size-14 rounded-2xl">
+              <EmptyMedia
+                variant="icon"
+                className="size-14 rounded-[16px] border-[1.5px] border-cozy-border-cocoa bg-cozy-cream text-cozy-burgundy shadow-[inset_0_1.5px_0_rgba(255,253,247,0.85),0_3px_0_0_rgba(125,99,91,0.3)]"
+              >
                 <ErrorIcon className="size-7" aria-hidden="true" />
               </EmptyMedia>
-              {isNotFound && <p className="text-sm font-medium text-muted-foreground">Lỗi 404</p>}
-              <h1 id="error-title" className="text-2xl font-semibold tracking-tight sm:text-3xl">
+              {isNotFound && <p className="text-sm font-bold text-cozy-taupe">Lỗi 404</p>}
+              <h1 id="error-title" className="text-2xl font-extrabold tracking-tight text-cozy-burgundy sm:text-3xl">
                 {isNotFound ? 'Không tìm thấy trang' : 'Đã có lỗi xảy ra'}
               </h1>
               <EmptyDescription>

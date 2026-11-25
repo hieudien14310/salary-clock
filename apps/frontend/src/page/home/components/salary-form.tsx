@@ -92,6 +92,12 @@ export function SalaryForm() {
       ? getSalaryPeriod(draftPeriodStart, draftPayday, draftPeriodStart)
       : null;
 
+  function applyCurrentMonthPeriod() {
+    const currentMonthPeriod = getSalaryPeriod(new Date());
+    setValue('periodStartDate', currentMonthPeriod.periodStart, { shouldDirty: true, shouldValidate: isSubmitted });
+    setValue('paydayDate', currentMonthPeriod.payday, { shouldDirty: true, shouldValidate: isSubmitted });
+  }
+
   function saveSalary(values: SalaryFormValues) {
     setSalarySettings(values.monthlySalary, values.paydayDate, values.periodStart);
     reset({
@@ -121,23 +127,25 @@ export function SalaryForm() {
     <Card id="salary-settings" className="salary-settings surface-card h-fit gap-6 py-6">
       <CardHeader className="gap-3 px-6">
         <div className="flex items-center gap-3">
-          <span className="flex size-10 items-center justify-center rounded-2xl bg-secondary text-primary">
+          <span className="flex size-11 items-center justify-center rounded-[14px] border-[1.5px] border-cozy-border-cocoa bg-cozy-cream text-cozy-burgundy shadow-[inset_0_1px_0_rgba(255,253,247,0.85),0_2.5px_0_0_rgba(125,99,91,0.35)]">
             <Wallet className="size-5" aria-hidden="true" />
           </span>
           <div>
-            <p className="section-eyebrow mb-1 text-muted-foreground">Bắt đầu từ đây</p>
-            <h2 className="text-lg font-semibold tracking-tight">Kỳ lương của bạn</h2>
+            <p className="section-eyebrow mb-0.5 text-cozy-taupe">Bắt đầu từ đây</p>
+            <h2 className="text-xl font-bold tracking-tight text-cozy-burgundy">Kỳ lương của bạn</h2>
           </div>
         </div>
-        <CardDescription className="text-xs leading-relaxed">Thiết lập một lần, theo dõi mỗi ngày.</CardDescription>
+        <CardDescription className="text-xs leading-relaxed font-medium text-cozy-taupe">
+          Thiết lập một lần, theo dõi mỗi ngày.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6 px-6">
         <form onSubmit={handleSubmit(saveSalary)} noValidate className="space-y-5">
           <div className="space-y-3">
-            <Label htmlFor="monthly-salary" className="text-xs font-semibold">
+            <Label htmlFor="monthly-salary" className="text-xs font-bold tracking-wide text-cozy-espresso uppercase">
               Tổng lương trong kỳ
             </Label>
-            <InputGroup className="h-14 rounded-xl">
+            <InputGroup className="h-14">
               <Controller
                 name="monthlySalary"
                 control={control}
@@ -168,30 +176,30 @@ export function SalaryForm() {
                     onBlur={field.onBlur}
                     aria-invalid={Boolean(errors.monthlySalary)}
                     aria-describedby={errors.monthlySalary ? 'salary-error' : 'salary-hint'}
-                    className="h-full px-4 text-xl font-semibold tracking-tight tabular-nums placeholder:text-sm placeholder:font-normal md:text-xl"
+                    className="font-heading h-full px-4 text-xl font-bold tracking-tight text-cozy-espresso tabular-nums placeholder:font-sans placeholder:text-sm placeholder:font-medium md:text-xl"
                   />
                 )}
               />
               <InputGroupAddon align="inline-end" className="pr-3">
-                <InputGroupText>VND</InputGroupText>
+                <InputGroupText className="rounded-[8px] border border-cozy-border-sand bg-cozy-cream px-2 py-0.5 text-xs font-bold text-cozy-espresso shadow-[inset_0_1px_0_rgba(255,253,247,0.85),0_1.5px_0_0_#DFC896]">
+                  VND
+                </InputGroupText>
               </InputGroupAddon>
             </InputGroup>
-            <p id="salary-hint" className="text-xs leading-relaxed text-muted-foreground">
+            <p id="salary-hint" className="text-xs leading-relaxed font-medium text-cozy-taupe">
               Chọn nhanh hoặc nhập số tiền của bạn.
             </p>
             {errors.monthlySalary && (
-              <p id="salary-error" role="alert" className="text-xs leading-relaxed text-destructive">
+              <p id="salary-error" role="alert" className="text-xs leading-relaxed font-semibold text-destructive">
                 {errors.monthlySalary.message}
               </p>
             )}
             <div className="flex flex-wrap gap-2" aria-label="Mức lương gợi ý">
               {SALARY_SUGGESTIONS.map((amount) => (
-                <Button
+                <button
                   key={amount}
                   type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-9 flex-1 rounded-lg text-xs aria-pressed:border-primary/40 aria-pressed:bg-secondary aria-pressed:text-primary"
+                  className="cozy-pill-tab h-9 flex-1 px-2 text-xs"
                   aria-pressed={draftSalary === formatSalaryInput(amount)}
                   onClick={() => {
                     setValue('monthlySalary', formatSalaryInput(amount), {
@@ -201,14 +209,24 @@ export function SalaryForm() {
                   }}
                 >
                   {amount / 1_000_000} triệu
-                </Button>
+                </button>
               ))}
             </div>
           </div>
-          <div className="space-y-4 border-t pt-5">
+          <div className="space-y-4 border-t-[1.5px] border-dashed border-cozy-border-sand pt-5">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[11px] font-bold tracking-wider text-cozy-taupe uppercase">Thời gian kỳ lương</span>
+              <button
+                type="button"
+                onClick={applyCurrentMonthPeriod}
+                className="cozy-pill-tab bg-cozy-blue px-2.5 py-0.5 text-[11px] font-bold hover:bg-cozy-cream"
+              >
+                Tháng này
+              </button>
+            </div>
             {PERIOD_DATE_FIELDS.map(({ name, id, label, placeholder }) => (
-              <div key={name} className="space-y-3">
-                <Label htmlFor={id} className="text-xs font-semibold">
+              <div key={name} className="space-y-2.5">
+                <Label htmlFor={id} className="text-xs font-bold text-cozy-espresso">
                   {label}
                 </Label>
                 <Controller
@@ -231,7 +249,7 @@ export function SalaryForm() {
                   )}
                 />
                 {errors[name] && (
-                  <p id={`${id}-error`} role="alert" className="text-xs leading-relaxed text-destructive">
+                  <p id={`${id}-error`} role="alert" className="text-xs leading-relaxed font-semibold text-destructive">
                     {errors[name].message}
                   </p>
                 )}
@@ -239,15 +257,17 @@ export function SalaryForm() {
             ))}
           </div>
           <div className="space-y-3">
-            <p id="period-hint" className="text-xs leading-relaxed text-muted-foreground">
+            <p id="period-hint" className="text-xs leading-relaxed font-medium text-cozy-taupe">
               Tính cả ngày bắt đầu, ngày nhận lương và cuối tuần.
             </p>
             {previewPeriod && (
-              <div className="flex items-center gap-3 rounded-xl bg-[var(--warm)] p-3.5 text-[var(--warm-foreground)]">
-                <CalendarDays className="size-4 shrink-0" aria-hidden="true" />
-                <div className="space-y-1">
-                  <p className="text-xs font-semibold">{previewPeriod.daysInPeriod} ngày cùng cố gắng</p>
-                  <p className="text-[11px] tabular-nums">
+              <div className="flex items-center gap-3 rounded-[14px] border-[1.5px] border-cozy-border-sand bg-cozy-cream/85 p-3.5 text-cozy-espresso shadow-[inset_0_1.5px_0_rgba(255,253,247,0.85),0_3px_0_0_#DFC896]">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-[10px] border border-cozy-border-cocoa/50 bg-cozy-canvas text-cozy-burgundy shadow-[0_1.5px_0_rgba(125,99,91,0.2)]">
+                  <CalendarDays className="size-4" aria-hidden="true" />
+                </span>
+                <div className="space-y-0.5">
+                  <p className="text-xs font-bold text-cozy-burgundy">{previewPeriod.daysInPeriod} ngày cùng cố gắng</p>
+                  <p className="text-[11px] font-semibold text-cozy-taupe tabular-nums">
                     {format(previewPeriod.periodStart, 'dd/MM/yyyy')} – {format(previewPeriod.payday, 'dd/MM/yyyy')}
                   </p>
                 </div>
@@ -256,7 +276,7 @@ export function SalaryForm() {
           </div>
           <Button
             type="submit"
-            className="h-12 w-full rounded-xl text-sm shadow-sm"
+            className="h-12 w-full rounded-[12px] text-sm font-bold"
             disabled={monthlySalary !== null && !isDirty}
           >
             {monthlySalary === null ? 'Xem tiền lớn lên' : isDirty ? 'Cập nhật kỳ lương' : 'Đã lưu kỳ lương'}
@@ -265,7 +285,13 @@ export function SalaryForm() {
           {monthlySalary !== null && (
             <AlertDialog open={isResetDialogOpen} onOpenChange={setResetDialogOpen}>
               <AlertDialogTrigger
-                render={<Button type="button" variant="ghost" className="h-10 w-full text-xs text-muted-foreground" />}
+                render={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="h-10 w-full text-xs font-semibold text-cozy-taupe hover:text-cozy-rust"
+                  />
+                }
               >
                 <RotateCcw className="size-3.5" aria-hidden="true" /> Xóa mức lương đã lưu
               </AlertDialogTrigger>
@@ -286,19 +312,19 @@ export function SalaryForm() {
               </AlertDialogContent>
             </AlertDialog>
           )}
-          <p role="status" className="text-xs leading-relaxed text-primary">
+          <p role="status" className="text-xs leading-relaxed font-semibold text-cozy-forest">
             {!isDirty && saveMessage}
           </p>
         </form>
-        <div className="space-y-3 border-t pt-5">
+        <div className="space-y-3 border-t-[1.5px] border-dashed border-cozy-border-sand pt-5">
           {hasStorageError && (
-            <p role="alert" className="text-xs leading-relaxed text-destructive">
+            <p role="alert" className="text-xs leading-relaxed font-semibold text-destructive">
               Không thể đọc hoặc lưu đầy đủ dữ liệu trên trình duyệt. Bạn vẫn có thể sử dụng trang, nhưng thay đổi có
               thể mất khi tải lại. Hãy kiểm tra quyền lưu trữ và dung lượng trống.
             </p>
           )}
-          <p className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
-            <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
+          <p className="flex gap-2 text-xs leading-relaxed font-medium text-cozy-taupe">
+            <ShieldCheck className="mt-0.5 size-4 shrink-0 text-cozy-forest" aria-hidden="true" />
             Lương là chuyện riêng của bạn. Dữ liệu chỉ lưu trên trình duyệt này.
           </p>
         </div>
